@@ -28,10 +28,8 @@ export function useBooking() {
   const bookConsultation = async (data: {
     name: string;
     phone: string;
-    email?: string;
-    date?: string;
-    time?: string;
-    concern?: string;
+    email: string;
+    message: string;
   }) => {
     setLoading(true);
     setError(null);

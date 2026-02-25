@@ -54,7 +54,7 @@ export const cartApi = {
 
 // Booking API
 export const bookingApi = {
-  bookHomeVisit: (data: { name: string; phone: string; address: string; date: string }) =>
+  bookHomeVisit: (data: { name: string; phone: string; address: string; date?: string; time?: string }) =>
     fetchApi('/booking/home-visit', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -78,7 +78,7 @@ export const bookingApi = {
       body: JSON.stringify(data),
     }),
 
-  bookConsultation: (data: { name: string; phone: string; date: string; concern: string }) =>
+  bookConsultation: (data: { name: string; phone: string; email: string; message: string }) =>
     fetchApi('/booking/consultation', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -100,7 +100,7 @@ export const prescriptionApi = {
 // Reports API
 export const reportsApi = {
   getReports: () => fetchApi('/reports'),
-  
+
   downloadReport: (reportId: string) =>
     fetchApi(`/reports/download/${reportId}`),
 };

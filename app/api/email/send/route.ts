@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 interface EmailData {
     to: string;
     subject: string;
@@ -20,6 +18,9 @@ async function sendEmail(data: EmailData) {
             console.log('Body:', data.html);
             return { success: true, mode: 'development' };
         }
+
+        // Initialize Resend only when API key is available
+        const resend = new Resend(process.env.RESEND_API_KEY);
 
         // Send actual email using Resend
         const result = await resend.emails.send({

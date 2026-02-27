@@ -2,16 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateEmail, hashPassword } from '@/lib/auth/security';
 
 // Mock user database (in production, use a real database)
-const mockUsers = [
-  {
-    id: '1',
-    name: 'Test User',
-    email: 'test@example.com',
-    phone: '9876543210',
-    password: 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', // Password123!
-    createdAt: new Date().toISOString(),
-  },
-];
+// For testing, users created via signup will be stored here
+const mockUsers: Array<{
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  createdAt: string;
+}> = [];
 
 export async function POST(request: NextRequest) {
   try {

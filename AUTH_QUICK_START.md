@@ -3,15 +3,21 @@
 ## Test the Authentication System
 
 ### 1. Test Login
+1. Navigate to `http://localhost:3000/signup`
+2. Create a new account with:
+   - Full Name: Your name
+   - Email: Your email
+   - Phone: 10-digit number (e.g., 9876543210)
+   - Password: Must meet requirements (e.g., `SecurePass123!`)
+3. After signup, you'll be automatically logged in
+4. Check the header - you should see your profile avatar with name
+
+### 2. Test Login with Existing Account
 1. Navigate to `http://localhost:3000/login`
-2. Use test credentials:
-   - Email: `test@example.com`
-   - Password: `Password123!`
+2. Use the credentials you created during signup
 3. Click "Login"
 4. You'll be redirected to home page
-5. Check the header - you should see your profile avatar with name
-
-### 2. Test Signup
+5. Check the header - you should see your profile avatar
 1. Navigate to `http://localhost:3000/signup`
 2. Fill in the form:
    - Full Name: Your name
@@ -81,9 +87,10 @@ Example valid passwords:
 
 ### POST `/api/auth/login`
 ```bash
+# First create an account via signup, then use those credentials
 curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"Password123!"}'
+  -d '{"email":"your@email.com","password":"YourPassword123!"}'
 ```
 
 ### POST `/api/auth/signup`

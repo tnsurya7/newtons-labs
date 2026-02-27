@@ -174,8 +174,11 @@
 ## 🧪 Testing
 
 ### Test Credentials
-- Email: test@example.com
-- Password: Password123!
+To test the authentication:
+1. Create an account via the signup page (`/signup`)
+2. Use your created credentials to login (`/login`)
+
+The application uses a mock in-memory database for demonstration purposes.
 
 ### Test Scenarios
 1. ✅ Login with test credentials

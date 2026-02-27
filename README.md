@@ -110,8 +110,11 @@ newtons-lab/
 Complete authentication with login, signup, and logout functionality.
 
 ### Test Credentials
-- **Email**: test@example.com
-- **Password**: Password123!
+To test the authentication system:
+1. First, create an account using the signup page at `/signup`
+2. Use your created credentials to login at `/login`
+
+Note: The application uses a mock in-memory database. Users created during signup will be available for login during the same session.
 
 ### Features
 - JWT token authentication

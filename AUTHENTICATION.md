@@ -66,8 +66,8 @@ Authenticates a user and returns a JWT token.
   "data": {
     "user": {
       "id": "1",
-      "name": "Test User",
-      "email": "test@example.com",
+      "name": "John Doe",
+      "email": "user@example.com",
       "phone": "9876543210",
       "createdAt": "2024-01-01T00:00:00.000Z"
     },
@@ -199,9 +199,18 @@ const { user, isAuthenticated, login, logout } = useAuthStore();
 
 ## Test Credentials
 
-For testing, use these credentials:
-- **Email:** test@example.com
-- **Password:** Password123!
+The application uses a mock in-memory database for demonstration purposes. To test:
+
+1. **Create an account** using the signup page (`/signup`)
+2. **Login** with your created credentials (`/login`)
+
+Users created during signup will be stored in memory and available for login during the same session. When the server restarts, you'll need to create a new account.
+
+### Example Test Flow
+1. Go to `/signup`
+2. Create account with valid credentials
+3. You'll be automatically logged in
+4. To test login separately, logout and use `/login` with your credentials
 
 ## Production Considerations
 

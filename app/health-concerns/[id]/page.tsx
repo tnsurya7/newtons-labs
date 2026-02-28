@@ -1,16 +1,19 @@
 'use client';
 
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FiArrowLeft, FiActivity } from 'react-icons/fi';
 import Button from '@/components/ui/Button';
 import TestCard from '@/components/TestCard';
+import SupportModal from '@/components/modals/SupportModal';
 import testsData from '@/lib/data/tests.json';
 
 export default function HealthConcernPage() {
   const params = useParams();
   const router = useRouter();
   const concernId = params.id as string;
+  const [showSupportModal, setShowSupportModal] = useState(false);
 
   // Find the concern
   const concern = testsData.healthConcerns.find(c => c.id === concernId);
@@ -139,12 +142,7 @@ export default function HealthConcernPage() {
               variant="outline"
               size="lg"
               className="bg-white text-gray-900 hover:bg-gray-100 border-0"
-              onClick={() => {
-                const phone = prompt('Enter your phone number for callback:');
-                if (phone) {
-                  alert('Our expert will call you within 15 minutes!');
-                }
-              }}
+              onClick={() => setShowSupportModal(true)}
             >
               Talk to Expert
             </Button>
@@ -158,6 +156,12 @@ export default function HealthConcernPage() {
           </div>
         </motion.div>
       </div>
+
+      {/* Support Modal */}
+      <SupportModal
+        isOpen={showSupportModal}
+        onClose={() => setShowSupportModal(false)}
+      />
     </div>
   );
 }

@@ -57,10 +57,10 @@ export default function HealthConcerns() {
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
               whileHover={{ scale: 1.05 }}
-              className="cursor-pointer"
+              className="cursor-pointer h-full"
               onClick={() => router.push(`/health-concerns/${concern.id}`)}
             >
-              <div className={`${colorMap[concern.color]} rounded-2xl p-6 text-white shadow-lg hover:shadow-2xl transition-all`}>
+              <div className={`${colorMap[concern.color]} rounded-2xl p-6 text-white shadow-lg hover:shadow-2xl transition-all h-full flex flex-col items-center justify-center text-center`}>
                 <div className="mb-3 flex items-center justify-center">
                   {iconMap[concern.icon]}
                 </div>

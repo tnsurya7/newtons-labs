@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { FiThermometer, FiDroplet, FiFilter, FiHeart, FiZap, FiSun, FiAlertCircle } from 'react-icons/fi';
 import testsData from '@/lib/data/tests.json';
 
 const colorMap: { [key: string]: string } = {
@@ -13,6 +14,16 @@ const colorMap: { [key: string]: string } = {
   'from-rose-400 to-red-400': 'bg-gradient-to-br from-rose-400 to-red-400',
   'from-yellow-400 to-orange-400': 'bg-gradient-to-br from-yellow-400 to-orange-400',
   'from-pink-400 to-rose-400': 'bg-gradient-to-br from-pink-400 to-rose-400',
+};
+
+const iconMap: { [key: string]: React.ReactNode } = {
+  'Thermometer': <FiThermometer size={40} />,
+  'Droplet': <FiDroplet size={40} />,
+  'Filter': <FiFilter size={40} />,
+  'Heart': <FiHeart size={40} />,
+  'Zap': <FiZap size={40} />,
+  'Sun': <FiSun size={40} />,
+  'AlertCircle': <FiAlertCircle size={40} />,
 };
 
 export default function HealthConcerns() {
@@ -50,7 +61,9 @@ export default function HealthConcerns() {
               onClick={() => router.push(`/health-concerns/${concern.id}`)}
             >
               <div className={`${colorMap[concern.color]} rounded-2xl p-6 text-white shadow-lg hover:shadow-2xl transition-all`}>
-                <div className="text-4xl mb-3">{concern.icon}</div>
+                <div className="mb-3 flex items-center justify-center">
+                  {iconMap[concern.icon]}
+                </div>
                 <h3 className="font-bold text-lg mb-1">{concern.name}</h3>
                 <p className="text-sm opacity-90">{concern.tests} Tests</p>
               </div>

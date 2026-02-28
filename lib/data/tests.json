@@ -107,56 +107,56 @@
     {
       "id": "c1",
       "name": "Fever",
-      "icon": "🌡️",
+      "icon": "Thermometer",
       "tests": 12,
       "color": "from-red-400 to-orange-400"
     },
     {
       "id": "c2",
       "name": "Diabetes",
-      "icon": "🩸",
+      "icon": "Droplet",
       "tests": 18,
       "color": "from-blue-400 to-cyan-400"
     },
     {
       "id": "c3",
       "name": "Kidney",
-      "icon": "🫘",
+      "icon": "Filter",
       "tests": 15,
       "color": "from-purple-400 to-pink-400"
     },
     {
       "id": "c4",
       "name": "Liver",
-      "icon": "🫀",
+      "icon": "Heart",
       "tests": 14,
       "color": "from-green-400 to-teal-400"
     },
     {
       "id": "c5",
       "name": "Thyroid",
-      "icon": "🦋",
+      "icon": "Zap",
       "tests": 10,
       "color": "from-indigo-400 to-purple-400"
     },
     {
       "id": "c6",
       "name": "Heart",
-      "icon": "❤️",
+      "icon": "Heart",
       "tests": 20,
       "color": "from-rose-400 to-red-400"
     },
     {
       "id": "c7",
       "name": "Vitamin",
-      "icon": "💊",
+      "icon": "Sun",
       "tests": 16,
       "color": "from-yellow-400 to-orange-400"
     },
     {
       "id": "c8",
       "name": "Allergy",
-      "icon": "🤧",
+      "icon": "AlertCircle",
       "tests": 25,
       "color": "from-pink-400 to-rose-400"
     }

@@ -1,14 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FiCheck, FiStar } from 'react-icons/fi';
 import Card from './ui/Card';
 import Button from './ui/Button';
 import Badge from './ui/Badge';
 import Toast from './ui/Toast';
+import LoginRequiredModal from './modals/LoginRequiredModal';
 import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/store/cart';
+import { useAuthStore } from '@/store/auth';
 
 interface PackageCardProps {
   id: string;
@@ -31,10 +34,19 @@ export default function PackageCard({
   popular,
   features,
 }: PackageCardProps) {
+  const router = useRouter();
   const addItem = useCartStore((state) => state.addItem);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [showToast, setShowToast] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const handleAddToCart = async () => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
+
     try {
       const response = await fetch('/api/cart/add', {
         method: 'POST',
@@ -125,6 +137,14 @@ export default function PackageCard({
           description={`Includes ${tests} Tests • Save ${discount}%`}
           price={price}
           type="success"
+        />
+
+        {/* Login Required Modal */}
+        <LoginRequiredModal
+          isOpen={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+          message="Please login to book packages and add items to your cart"
+          feature="book packages"
         />
       </Card>
     </motion.div>

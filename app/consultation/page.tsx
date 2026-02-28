@@ -1,23 +1,43 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { FiArrowLeft, FiUser, FiMail, FiPhone, FiMessageSquare } from 'react-icons/fi';
 import Button from '@/components/ui/Button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { useAuthStore } from '@/store/auth';
 
 export default function ConsultationPage() {
     const router = useRouter();
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         phone: '',
         message: '',
     });
+
+    // Prevent hydration mismatch
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    // Redirect to login if not authenticated
+    useEffect(() => {
+        if (mounted && !isAuthenticated) {
+            const shouldLogin = confirm('🔒 Login Required\n\nPlease login to book online consultation.\n\nClick OK to go to login page.');
+            if (shouldLogin) {
+                router.push('/login');
+            } else {
+                router.push('/');
+            }
+        }
+    }, [mounted, isAuthenticated, router]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({

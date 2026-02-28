@@ -12,9 +12,23 @@ import Footer from '@/components/Footer';
 import MobileNav from '@/components/MobileNav';
 import Button from '@/components/ui/Button';
 import testsData from '@/lib/data/tests.json';
+import { useAuthStore } from '@/store/auth';
+import { FiUserCheck } from 'react-icons/fi';
 
 export default function Home() {
   const router = useRouter();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  const handleConsultationClick = () => {
+    if (!isAuthenticated) {
+      const shouldLogin = confirm('Login Required\n\nPlease login to book online consultation with our doctors.\n\nClick OK to go to login page.');
+      if (shouldLogin) {
+        router.push('/login');
+      }
+      return;
+    }
+    router.push('/consultation');
+  };
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white overflow-x-hidden">
       <Header />
@@ -90,7 +104,7 @@ export default function Home() {
               viewport={{ once: true }}
               className="bg-white/20 backdrop-blur-lg rounded-3xl p-8 md:p-12 text-center text-white border-2 border-white/30 shadow-2xl"
             >
-              <div className="text-6xl mb-6">👨‍⚕️</div>
+              <FiUserCheck className="mx-auto mb-6" size={64} />
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
                 Need Expert Medical Advice?
               </h2>
@@ -99,7 +113,7 @@ export default function Home() {
               </p>
               <Button
                 size="lg"
-                onClick={() => router.push('/consultation')}
+                onClick={handleConsultationClick}
                 className="bg-white text-blue-600 hover:bg-blue-50 dark:bg-white dark:text-blue-600 dark:hover:bg-gray-100"
               >
                 Book Online Consultation

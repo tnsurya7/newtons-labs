@@ -4,15 +4,19 @@ import { motion } from 'framer-motion';
 import { FiTrash2, FiShoppingCart, FiArrowLeft, FiCheck } from 'react-icons/fi';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/cart';
+import { useAuthStore } from '@/store/auth';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
+import CheckoutModal from '@/components/modals/CheckoutModal';
 import { formatPrice } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 
 export default function CartPage() {
   const router = useRouter();
   const { items, removeItem, clearCart, totalItems } = useCartStore();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   // Prevent hydration mismatch
@@ -20,26 +24,28 @@ export default function CartPage() {
     setMounted(true);
   }, []);
 
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (mounted && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [mounted, isAuthenticated, router]);
+
   const subtotal = items.reduce((sum, item) => sum + item.price, 0);
   const discount = Math.floor(subtotal * 0.1); // 10% discount
   const total = subtotal - discount;
 
-  const handleCheckout = async () => {
-    const name = prompt('Enter your name:');
-    if (!name) return;
-    const phone = prompt('Enter your phone number:');
-    if (!phone) return;
-    const address = prompt('Enter your address:');
-    if (!address) return;
+  const handleCheckout = () => {
+    setShowCheckoutForm(true);
+  };
 
+  const handleCheckoutSubmit = async (data: { name: string; phone: string; address: string }) => {
     try {
       const response = await fetch('/api/booking/home-visit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name,
-          phone,
-          address,
+          ...data,
           items: items.map(item => ({ id: item.id, name: item.name, price: item.price })),
           total,
         }),
@@ -47,6 +53,7 @@ export default function CartPage() {
 
       const result = await response.json();
       if (result.success) {
+        setShowCheckoutForm(false);
         setShowCheckoutModal(true);
         setTimeout(() => {
           clearCart();
@@ -273,6 +280,15 @@ export default function CartPage() {
           </div>
         )}
       </div>
+
+      {/* Checkout Form Modal */}
+      <CheckoutModal
+        isOpen={showCheckoutForm}
+        onClose={() => setShowCheckoutForm(false)}
+        onSubmit={handleCheckoutSubmit}
+        totalAmount={total}
+        itemCount={totalItems}
+      />
     </div>
   );
 }

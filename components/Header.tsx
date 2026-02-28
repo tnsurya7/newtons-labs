@@ -148,16 +148,15 @@ export default function Header() {
         <div className="container mx-auto px-4 py-2">
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-teal-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">
-                N
-              </div>
-              <div className="hidden sm:block">
-                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
-                  New10Lab
-                </h1>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Trusted Diagnostics</p>
-              </div>
+            <div 
+              className="flex items-center gap-2 cursor-pointer"
+              onClick={() => router.push('/')}
+            >
+              <img 
+                src="/new10labs-logo.png" 
+                alt="New10Labs Logo" 
+                className="h-12 w-auto object-contain"
+              />
             </div>
 
             {/* Location */}

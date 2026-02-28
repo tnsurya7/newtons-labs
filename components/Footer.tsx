@@ -113,14 +113,6 @@ export default function Footer() {
                 </li>
                 <li>
                   <button 
-                    onClick={() => alert('📥 Download Reports\n\nAccess your test reports:\n✓ View online\n✓ Download PDF\n✓ Share with doctors\n✓ Track history\n\nLogin to access your reports!')}
-                    className="hover:text-blue-400 transition-colors text-left"
-                  >
-                    Download Reports
-                  </button>
-                </li>
-                <li>
-                  <button 
                     onClick={() => setShowSupportModal(true)}
                     className="hover:text-blue-400 transition-colors text-left"
                   >

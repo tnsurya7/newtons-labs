@@ -260,21 +260,6 @@ export default function CartPage() {
                     </div>
                   </div>
                 </Card>
-
-                {/* Promo Code */}
-                <Card className="p-6 mt-4">
-                  <h3 className="font-bold mb-3 text-gray-900 dark:text-white">
-                    Have a Promo Code?
-                  </h3>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      placeholder="Enter code"
-                      className="flex-1 px-4 py-2 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 focus:border-blue-600 outline-none"
-                    />
-                    <Button variant="outline">Apply</Button>
-                  </div>
-                </Card>
               </motion.div>
             </div>
           </div>

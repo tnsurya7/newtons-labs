@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { FiHome, FiUpload, FiDownload, FiActivity } from 'react-icons/fi';
+import { FiHome, FiUpload, FiActivity } from 'react-icons/fi';
 import Button from './ui/Button';
 import LoginRequiredModal from './modals/LoginRequiredModal';
 import { useAuthStore } from '@/store/auth';
@@ -55,14 +55,7 @@ export default function Hero() {
     input.click();
   };
 
-  const handleDownloadReports = () => {
-    if (!isAuthenticated) {
-      setLoginFeature('access and download reports');
-      setShowLoginModal(true);
-      return;
-    }
-    alert('Download Reports\n\nAccess your test reports:\n• View online\n• Download PDF\n• Share with doctors\n• Track history\n\nYour reports are ready to download!');
-  };
+
 
   return (
     <>
@@ -127,14 +120,6 @@ export default function Hero() {
                   onClick={handlePrescriptionUpload}
                 >
                   <FiUpload /> Upload Prescription
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="lg" 
-                  className="gap-2"
-                  onClick={handleDownloadReports}
-                >
-                  <FiDownload /> Download Reports
                 </Button>
               </div>
 

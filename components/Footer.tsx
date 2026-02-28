@@ -11,10 +11,10 @@ export default function Footer() {
               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-teal-600 rounded-xl flex items-center justify-center text-white font-bold">
                 N
               </div>
-              <h3 className="text-xl font-bold text-white">Newton Labs</h3>
+              <h3 className="text-xl font-bold text-white">New10Lab</h3>
             </div>
             <p className="text-sm mb-4">
-              India&apos;s most trusted diagnostic laboratory with NABL certified facilities across 250+ cities.
+              India&apos;s most trusted diagnostic laboratory with NABL certified facilities.
             </p>
             <div className="flex gap-3">
               <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors">
@@ -66,20 +66,19 @@ export default function Footer() {
                 <FiPhone className="mt-1 text-blue-400 flex-shrink-0" />
                 <div>
                   <p className="font-semibold text-white">Customer Care</p>
-                  <p>1800-123-4567</p>
-                  <p>+91 98765 43210</p>
+                  <p>9003130800</p>
                 </div>
               </li>
               <li className="flex items-start gap-2">
                 <FiMail className="mt-1 text-teal-400 flex-shrink-0" />
                 <div>
-                  <p>support@newtonslab.com</p>
-                  <p>info@newtonslab.com</p>
+                  <p>support@new10lab.com</p>
+                  <p>info@new10lab.com</p>
                 </div>
               </li>
               <li className="flex items-start gap-2">
                 <FiMapPin className="mt-1 text-purple-400 flex-shrink-0" />
-                <p>Chennai, Tamil Nadu<br />India - 600000</p>
+                <p>152/3, 6th Avenue,<br />Anna Nagar East,<br />Chennai - 600 102</p>
               </li>
             </ul>
           </div>
@@ -88,7 +87,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-            <p>&copy; 2024 Newton Labs. All rights reserved.</p>
+            <p>&copy; 2024 New10Lab. All rights reserved.</p>
             <div className="flex gap-6">
               <a href="#" className="hover:text-blue-400 transition-colors">Privacy Policy</a>
               <a href="#" className="hover:text-blue-400 transition-colors">Terms of Service</a>

@@ -41,19 +41,19 @@ export default function Header() {
     <>
       <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800">
         {/* Top Bar */}
-        <div className="bg-gradient-to-r from-blue-600 via-teal-600 to-purple-600 text-white py-2 px-4 text-sm">
+        <div className="bg-gradient-to-r from-blue-600 via-teal-600 to-purple-600 text-white py-1.5 px-4 text-sm">
           <div className="container mx-auto flex justify-between items-center">
             <span>🎉 Get 60% OFF on Health Packages | Free Home Sample Collection</span>
             <div className="hidden md:flex items-center gap-4">
               <span className="flex items-center gap-1">
-                <FiPhone size={14} /> 1800-123-4567
+                <FiPhone size={14} /> 9003130800
               </span>
             </div>
           </div>
         </div>
 
         {/* Main Header */}
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-2">
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
             <div className="flex items-center gap-2">
@@ -62,7 +62,7 @@ export default function Header() {
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
-                  Newton Labs
+                  New10Lab
                 </h1>
                 <p className="text-xs text-gray-600 dark:text-gray-400">Trusted Diagnostics</p>
               </div>
@@ -237,9 +237,6 @@ export default function Header() {
               </a>
               <a href="#packages" className="px-4 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                 Packages
-              </a>
-              <a href="#radiology" className="px-4 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                Radiology
               </a>
               <button
                 onClick={() => setShowLocationModal(true)}

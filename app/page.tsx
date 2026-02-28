@@ -7,7 +7,6 @@ import Hero from '@/components/Hero';
 import TestCard from '@/components/TestCard';
 import PackageCard from '@/components/PackageCard';
 import HealthConcerns from '@/components/HealthConcerns';
-import Radiology from '@/components/Radiology';
 import TrustSection from '@/components/TrustSection';
 import Footer from '@/components/Footer';
 import MobileNav from '@/components/MobileNav';
@@ -78,9 +77,6 @@ export default function Home() {
 
         {/* Health Concerns */}
         <HealthConcerns />
-
-        {/* Radiology Services */}
-        <Radiology />
 
         {/* Trust Section */}
         <TrustSection />

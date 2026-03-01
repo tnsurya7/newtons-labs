@@ -1,8 +1,19 @@
-import { Resend } from 'resend';
 import { BookingWithItems } from '@/lib/supabase/types';
 import { generateBookingConfirmationEmail, generateAdminNotificationEmail } from './templates';
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+// Dynamically import Resend only if available
+let Resend: any = null;
+let resend: any = null;
+
+try {
+  const ResendModule = require('resend');
+  Resend = ResendModule.Resend;
+  if (process.env.RESEND_API_KEY) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+} catch (error) {
+  console.warn('Resend package not available. Email functionality disabled.');
+}
 
 export async function sendBookingConfirmationEmail(booking: BookingWithItems) {
   if (!resend) {

@@ -23,13 +23,15 @@ export async function POST(request: NextRequest) {
     // Check if Supabase is configured
     if (!supabase) {
       console.warn('Supabase not configured. Returning mock booking.');
-      const mockBookingId = `BK-MOCK-${Date.now()}`;
+      const mockBookingId = generateBookingId();
+      const totalAmount = items.reduce((sum: number, item: any) => sum + item.price, 0);
+      
       return NextResponse.json({
         success: true,
         booking: {
           id: mockBookingId,
           booking_id: mockBookingId,
-          total_amount: items.reduce((sum: number, item: any) => sum + item.price, 0),
+          total_amount: totalAmount,
         },
         message: 'Database not configured. This is a mock booking for testing.',
       });

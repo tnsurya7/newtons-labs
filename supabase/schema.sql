@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Tests table
 CREATE TABLE IF NOT EXISTS tests (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id TEXT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   price DECIMAL(10, 2) NOT NULL,
   original_price DECIMAL(10, 2) NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS tests (
 
 -- Packages table
 CREATE TABLE IF NOT EXISTS packages (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id TEXT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   price DECIMAL(10, 2) NOT NULL,
   original_price DECIMAL(10, 2) NOT NULL,
@@ -142,8 +142,7 @@ VALUES
   ('3', 'Lipid Profile', 449, 799, 44, 8, '12 hours', true, 'Heart Health', 'active'),
   ('4', 'HbA1c (Glycated Hemoglobin)', 349, 599, 42, 1, '24 hours', false, 'Diabetes', 'active'),
   ('5', 'Vitamin D (25-OH)', 799, 1299, 38, 1, '48 hours', false, 'Vitamins', 'active'),
-  ('6', 'Liver Function Test (LFT)', 399, 699, 43, 11, '12 hours', true, 'Liver Health', 'active')
-ON CONFLICT (id) DO NOTHING;
+  ('6', 'Liver Function Test (LFT)', 399, 699, 43, 11, '12 hours', true, 'Liver Health', 'active');
 
 -- Insert initial package data
 INSERT INTO packages (id, name, price, original_price, discount, tests_count, popular, features, status)
@@ -151,8 +150,7 @@ VALUES
   ('p1', 'Aarogyam Basic', 999, 2499, 60, 62, true, '["CBC", "Lipid Profile", "Liver Function", "Kidney Function", "Thyroid"]'::jsonb, 'active'),
   ('p2', 'Aarogyam Advanced', 1999, 4999, 60, 98, true, '["All Basic Tests", "Vitamin D", "Vitamin B12", "Iron Studies", "HbA1c"]'::jsonb, 'active'),
   ('p3', 'Full Body Checkup', 2499, 6999, 64, 110, false, '["Complete Health Screening", "Cardiac Risk", "Diabetes", "Thyroid", "Vitamins"]'::jsonb, 'active'),
-  ('p4', 'Senior Citizen Package', 2999, 7999, 63, 125, false, '["Age-specific Tests", "Cardiac Markers", "Bone Health", "Cancer Markers"]'::jsonb, 'active')
-ON CONFLICT (id) DO NOTHING;
+  ('p4', 'Senior Citizen Package', 2999, 7999, 63, 125, false, '["Age-specific Tests", "Cardiac Markers", "Bone Health", "Cancer Markers"]'::jsonb, 'active');
 
 -- Create admin user (password: admin123 - CHANGE THIS!)
 -- Password hash for 'admin123' using bcrypt
@@ -164,8 +162,7 @@ VALUES (
   '$2a$10$rKvVPZqGvXQKvXQKvXQKvOqGvXQKvXQKvXQKvXQKvXQKvXQKvXQKve',
   'admin',
   'active'
-)
-ON CONFLICT (email) DO NOTHING;
+);
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;

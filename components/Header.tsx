@@ -8,10 +8,8 @@ import { useCartStore } from '@/store/cart';
 import { useThemeStore } from '@/store/theme';
 import { useAuthStore } from '@/store/auth';
 import { useLocationStore } from '@/store/location';
-import { supportApi } from '@/lib/api/client';
 import LocationModal from './modals/LocationModal';
 import SupportModal from './modals/SupportModal';
-import testsData from '@/lib/data/tests.json';
 
 interface SearchResult {
   id: string;
@@ -64,48 +62,27 @@ export default function Header() {
 
   // Search functionality
   useEffect(() => {
-    if (searchQuery.trim() === '') {
+    if (searchQuery.trim() === '' || searchQuery.length < 2) {
       setSearchResults([]);
       setShowSearchResults(false);
       return;
     }
 
-    const query = searchQuery.toLowerCase();
-    const results: SearchResult[] = [];
-
-    // Search in tests
-    testsData.frequentlyBookedTests.forEach((test) => {
-      if (test.name.toLowerCase().includes(query)) {
-        results.push({
-          id: test.id,
-          name: test.name,
-          type: 'test',
-          price: test.price,
-          originalPrice: test.originalPrice,
-          discount: test.discount,
-          details: `${test.parameters} parameters • ${test.reportTime}`,
-        });
+    // Debounce search
+    const timeoutId = setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`);
+        const data = await response.json();
+        setSearchResults(data.results || []);
+        setShowSearchResults((data.results || []).length > 0);
+      } catch (error) {
+        console.error('Search error:', error);
+        setSearchResults([]);
+        setShowSearchResults(false);
       }
-    });
+    }, 300);
 
-    // Search in packages
-    testsData.healthPackages.forEach((pkg) => {
-      if (pkg.name.toLowerCase().includes(query) || 
-          pkg.features.some(f => f.toLowerCase().includes(query))) {
-        results.push({
-          id: pkg.id,
-          name: pkg.name,
-          type: 'package',
-          price: pkg.price,
-          originalPrice: pkg.originalPrice,
-          discount: pkg.discount,
-          details: `${pkg.tests} tests included`,
-        });
-      }
-    });
-
-    setSearchResults(results);
-    setShowSearchResults(results.length > 0);
+    return () => clearTimeout(timeoutId);
   }, [searchQuery]);
 
   const handleSearchResultClick = (result: SearchResult) => {

@@ -20,6 +20,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if Supabase is configured
+    if (!supabase) {
+      console.warn('Supabase not configured. Returning mock booking.');
+      const mockBookingId = `BK-MOCK-${Date.now()}`;
+      return NextResponse.json({
+        success: true,
+        booking: {
+          id: mockBookingId,
+          booking_id: mockBookingId,
+          total_amount: items.reduce((sum: number, item: any) => sum + item.price, 0),
+        },
+        message: 'Database not configured. This is a mock booking for testing.',
+      });
+    }
+
     // Calculate totals
     const subtotal = items.reduce((sum: number, item: any) => sum + item.price, 0);
     const discountAmount = items.reduce((sum: number, item: any) => {

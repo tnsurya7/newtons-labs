@@ -41,27 +41,45 @@ export default function CartPage() {
 
   const handleCheckoutSubmit = async (data: { name: string; phone: string; address: string }) => {
     try {
-      const response = await fetch('/api/booking/home-visit', {
+      // Get user from auth store
+      const user = useAuthStore.getState().user;
+      
+      const response = await fetch('/api/bookings/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...data,
-          items: items.map(item => ({ id: item.id, name: item.name, price: item.price })),
-          total,
+          user: {
+            id: user?.email || null,
+            name: data.name,
+            email: user?.email || 'guest@new10lab.com',
+            phone: data.phone,
+          },
+          items: items.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            type: item.type,
+            originalPrice: item.price,
+            discount: 0,
+          })),
+          address: data.address,
+          phone: data.phone,
         }),
       });
 
       const result = await response.json();
+      
       if (result.success) {
         setShowCheckoutForm(false);
-        setShowCheckoutModal(true);
-        setTimeout(() => {
-          clearCart();
-          router.push('/');
-        }, 3000);
+        clearCart();
+        // Redirect to confirmation page
+        router.push(`/booking/confirmation/${result.booking.booking_id}`);
+      } else {
+        alert('Checkout failed. Please try again.');
       }
     } catch (error) {
-      alert('Checkout failed. Please try again.');
+      console.error('Checkout error:', error);
+      alert('An error occurred. Please try again.');
     }
   };
 

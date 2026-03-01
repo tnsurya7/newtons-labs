@@ -56,33 +56,11 @@ export default function CheckoutModal({
     return !newErrors.name && !newErrors.phone && !newErrors.address;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      try {
-        // Call the booking API
-        const response = await fetch('/api/bookings/create', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            user: formData,
-            items: [], // Will be populated from cart
-            address: formData.address,
-            phone: formData.phone,
-          }),
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          onSubmit(formData);
-        } else {
-          alert('Failed to create booking. Please try again.');
-        }
-      } catch (error) {
-        console.error('Booking error:', error);
-        alert('An error occurred. Please try again.');
-      }
+      onSubmit(formData);
+      setFormData({ name: '', phone: '', address: '' });
     }
   };
 

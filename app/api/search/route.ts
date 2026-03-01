@@ -10,6 +10,49 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ results: [] });
     }
 
+    // Check if Supabase is configured
+    if (!supabase) {
+      // Fallback to JSON file search
+      const testsData = await import('@/lib/data/tests.json');
+      const results: any[] = [];
+
+      // Search tests
+      testsData.frequentlyBookedTests.forEach((test: any) => {
+        if (test.name.toLowerCase().includes(query)) {
+          results.push({
+            id: test.id,
+            name: test.name,
+            type: 'test',
+            price: test.price,
+            originalPrice: test.originalPrice,
+            discount: test.discount,
+            details: `${test.parameters} parameters • ${test.reportTime}`,
+          });
+        }
+      });
+
+      // Search packages
+      testsData.healthPackages.forEach((pkg: any) => {
+        if (pkg.name.toLowerCase().includes(query)) {
+          results.push({
+            id: pkg.id,
+            name: pkg.name,
+            type: 'package',
+            price: pkg.price,
+            originalPrice: pkg.originalPrice,
+            discount: pkg.discount,
+            details: `${pkg.tests} tests included`,
+            popular: pkg.popular,
+          });
+        }
+      });
+
+      return NextResponse.json({ 
+        results: results.slice(0, 10),
+        total: results.length 
+      });
+    }
+
     const results: any[] = [];
 
     // Search tests

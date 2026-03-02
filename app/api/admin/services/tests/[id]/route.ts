@@ -4,7 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase/client';
 // PUT - Update test
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     if (!supabaseAdmin) {
@@ -15,7 +15,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { id } = params;
+    const { id } = await params;
 
     console.log('Updating test:', id, body);
 
@@ -48,7 +48,7 @@ export async function PUT(
 // DELETE - Delete test
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     if (!supabaseAdmin) {
@@ -58,7 +58,7 @@ export async function DELETE(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     console.log('Deleting test:', id);
 

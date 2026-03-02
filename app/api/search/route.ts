@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
       .or(`name.ilike.%${query}%,category.ilike.%${query}%,description.ilike.%${query}%`);
 
     if (!testsError && tests) {
-      tests.forEach((test) => {
+      tests.forEach((test: any) => {
         results.push({
           id: test.id,
           name: test.name,
@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
       .or(`name.ilike.%${query}%,description.ilike.%${query}%`);
 
     if (!packagesError && packages) {
-      packages.forEach((pkg) => {
+      packages.forEach((pkg: any) => {
         results.push({
           id: pkg.id,
           name: pkg.name,

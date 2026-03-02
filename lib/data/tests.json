@@ -252,5 +252,6 @@
       "tests": 25,
       "color": "from-pink-400 to-rose-400"
     }
-  ]
+  ],
+  "radiologyServices": []
 }

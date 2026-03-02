@@ -28,9 +28,9 @@ export default function Footer() {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <img 
-                  src="/new10labs-logo.png" 
+                  src="/New10labs-logo.png" 
                   alt="New10Labs Logo" 
-                  className="h-12 w-auto object-contain"
+                  className="h-16 w-auto object-contain"
                 />
               </div>
               <p className="text-sm mb-4">

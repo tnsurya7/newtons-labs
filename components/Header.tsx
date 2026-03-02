@@ -62,11 +62,14 @@ export default function Header() {
 
   // Search functionality
   useEffect(() => {
-    if (searchQuery.trim() === '' || searchQuery.length < 2) {
+    if (searchQuery.trim() === '') {
       setSearchResults([]);
       setShowSearchResults(false);
       return;
     }
+
+    // Show results immediately on any input
+    setShowSearchResults(true);
 
     // Debounce search
     const timeoutId = setTimeout(async () => {
@@ -74,11 +77,9 @@ export default function Header() {
         const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`);
         const data = await response.json();
         setSearchResults(data.results || []);
-        setShowSearchResults((data.results || []).length > 0);
       } catch (error) {
         console.error('Search error:', error);
         setSearchResults([]);
-        setShowSearchResults(false);
       }
     }, 300);
 
@@ -88,11 +89,25 @@ export default function Header() {
   const handleSearchResultClick = (result: SearchResult) => {
     setSearchQuery('');
     setShowSearchResults(false);
-    // Scroll to the section
-    const sectionId = result.type === 'test' ? 'tests' : 'packages';
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    
+    // Navigate to homepage if not already there
+    if (window.location.pathname !== '/') {
+      router.push('/');
+      // Wait for navigation then scroll
+      setTimeout(() => {
+        const sectionId = result.type === 'test' ? 'tests' : 'packages';
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } else {
+      // Already on homepage, just scroll
+      const sectionId = result.type === 'test' ? 'tests' : 'packages';
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
   };
 
@@ -126,7 +141,7 @@ export default function Header() {
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
             <div 
-              className="flex items-center gap-2 cursor-pointer"
+              className="flex items-center gap-3 cursor-pointer"
               onClick={() => router.push('/')}
             >
               <img 
@@ -164,49 +179,61 @@ export default function Header() {
 
               {/* Search Results Dropdown */}
               <AnimatePresence>
-                {showSearchResults && searchResults.length > 0 && (
+                {showSearchResults && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     className="absolute top-full mt-2 w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 max-h-96 overflow-y-auto z-50"
                   >
-                    <div className="p-2">
-                      {searchResults.map((result) => (
-                        <button
-                          key={result.id}
-                          onClick={() => handleSearchResultClick(result)}
-                          className="w-full text-left p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                                  {result.name}
-                                </span>
-                                <span className={`text-xs px-2 py-0.5 rounded-full ${
-                                  result.type === 'test' 
-                                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' 
-                                    : 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300'
-                                }`}>
-                                  {result.type === 'test' ? 'Test' : 'Package'}
-                                </span>
+                    {searchResults.length > 0 ? (
+                      <div className="p-2">
+                        {searchResults.map((result) => (
+                          <button
+                            key={result.id}
+                            onClick={() => handleSearchResultClick(result)}
+                            className="w-full text-left p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                                    {result.name}
+                                  </span>
+                                  <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                    result.type === 'test' 
+                                      ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' 
+                                      : 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300'
+                                  }`}>
+                                    {result.type === 'test' ? 'Test' : 'Package'}
+                                  </span>
+                                </div>
+                                {result.details && (
+                                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    {result.details}
+                                  </p>
+                                )}
                               </div>
-                              {result.details && (
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                  {result.details}
-                                </p>
-                              )}
+                              <div className="text-right ml-4">
+                                <p className="text-lg font-bold text-blue-600 dark:text-blue-400">₹{result.price}</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 line-through">₹{result.originalPrice}</p>
+                                <p className="text-xs text-green-600 dark:text-green-400 font-semibold">{result.discount}% OFF</p>
+                              </div>
                             </div>
-                            <div className="text-right ml-4">
-                              <p className="text-lg font-bold text-blue-600">₹{result.price}</p>
-                              <p className="text-xs text-gray-500 line-through">₹{result.originalPrice}</p>
-                              <p className="text-xs text-green-600 font-semibold">{result.discount}% OFF</p>
-                            </div>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="p-8 text-center">
+                        <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <FiSearch size={32} className="text-gray-400 dark:text-gray-500" />
+                        </div>
+                        <p className="text-gray-900 dark:text-white font-semibold mb-1">No matches found</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          Try searching with different keywords
+                        </p>
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -333,48 +360,60 @@ export default function Header() {
 
             {/* Mobile Search Results */}
             <AnimatePresence>
-              {showSearchResults && searchResults.length > 0 && (
+              {showSearchResults && (
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   className="mt-2 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 max-h-80 overflow-y-auto"
                 >
-                  <div className="p-2">
-                    {searchResults.map((result) => (
-                      <button
-                        key={result.id}
-                        onClick={() => handleSearchResultClick(result)}
-                        className="w-full text-left p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                                {result.name}
-                              </span>
-                              <span className={`text-xs px-2 py-0.5 rounded-full ${
-                                result.type === 'test' 
-                                  ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' 
-                                  : 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300'
-                              }`}>
-                                {result.type === 'test' ? 'Test' : 'Package'}
-                              </span>
+                  {searchResults.length > 0 ? (
+                    <div className="p-2">
+                      {searchResults.map((result) => (
+                        <button
+                          key={result.id}
+                          onClick={() => handleSearchResultClick(result)}
+                          className="w-full text-left p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                                  {result.name}
+                                </span>
+                                <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                  result.type === 'test' 
+                                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' 
+                                    : 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300'
+                                }`}>
+                                  {result.type === 'test' ? 'Test' : 'Package'}
+                                </span>
+                              </div>
+                              {result.details && (
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                  {result.details}
+                                </p>
+                              )}
                             </div>
-                            {result.details && (
-                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                {result.details}
-                              </p>
-                            )}
+                            <div className="text-right ml-4">
+                              <p className="text-base font-bold text-blue-600 dark:text-blue-400">₹{result.price}</p>
+                              <p className="text-xs text-green-600 dark:text-green-400 font-semibold">{result.discount}% OFF</p>
+                            </div>
                           </div>
-                          <div className="text-right ml-4">
-                            <p className="text-base font-bold text-blue-600">₹{result.price}</p>
-                            <p className="text-xs text-green-600 font-semibold">{result.discount}% OFF</p>
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-6 text-center">
+                      <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <FiSearch size={24} className="text-gray-400 dark:text-gray-500" />
+                      </div>
+                      <p className="text-gray-900 dark:text-white font-semibold text-sm mb-1">No matches found</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                        Try different keywords
+                      </p>
+                    </div>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>

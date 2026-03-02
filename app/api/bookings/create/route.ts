@@ -63,8 +63,8 @@ export async function POST(request: NextRequest) {
         tax_amount: taxAmount,
         total_amount: totalAmount,
         status: 'pending',
-        payment_status: 'paid',
-        payment_method: 'online',
+        payment_status: 'pending',
+        payment_method: 'pay_on_service',
       })
       .select()
       .single();

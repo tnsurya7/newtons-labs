@@ -1,0 +1,60 @@
+{
+  "packages": [
+    {
+      "id": "p1",
+      "name": "Aarogyam Basic",
+      "price": 999,
+      "original_price": 2499,
+      "discount": 60,
+      "tests_count": 62,
+      "popular": true,
+      "status": "active",
+      "description": "Comprehensive basic health checkup package",
+      "features": ["CBC", "Lipid Profile", "Liver Function", "Kidney Function", "Thyroid"],
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "p2",
+      "name": "Aarogyam Advanced",
+      "price": 1999,
+      "original_price": 4999,
+      "discount": 60,
+      "tests_count": 98,
+      "popular": true,
+      "status": "active",
+      "description": "Advanced health screening with vitamins and minerals",
+      "features": ["All Basic Tests", "Vitamin D", "Vitamin B12", "Iron Studies", "HbA1c"],
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "p3",
+      "name": "Full Body Checkup",
+      "price": 2499,
+      "original_price": 6999,
+      "discount": 64,
+      "tests_count": 110,
+      "popular": false,
+      "status": "active",
+      "description": "Complete health screening for overall wellness",
+      "features": ["Complete Health Screening", "Cardiac Risk", "Diabetes", "Thyroid", "Vitamins"],
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "p4",
+      "name": "Senior Citizen Package",
+      "price": 2999,
+      "original_price": 7999,
+      "discount": 63,
+      "tests_count": 125,
+      "popular": false,
+      "status": "active",
+      "description": "Specialized health package for senior citizens",
+      "features": ["Age-specific Tests", "Cardiac Markers", "Bone Health", "Cancer Markers"],
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
+    }
+  ]
+}

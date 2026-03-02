@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { FiHome, FiUpload, FiActivity } from 'react-icons/fi';
+import { FiHome, FiActivity } from 'react-icons/fi';
+import DNALogo from './ui/DNALogo';
 import Button from './ui/Button';
 import LoginRequiredModal from './modals/LoginRequiredModal';
 import { useAuthStore } from '@/store/auth';
@@ -22,40 +23,6 @@ export default function Hero() {
     }
     router.push('/home-visit');
   };
-
-  const handlePrescriptionUpload = () => {
-    if (!isAuthenticated) {
-      setLoginFeature('upload prescriptions');
-      setShowLoginModal(true);
-      return;
-    }
-
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*,.pdf';
-    input.onchange = async (e: any) => {
-      const file = e.target.files[0];
-      if (file) {
-        const formData = new FormData();
-        formData.append('prescription', file);
-        try {
-          const response = await fetch('/api/prescription/upload', {
-            method: 'POST',
-            body: formData,
-          });
-          const result = await response.json();
-          if (result.success) {
-            alert(`Prescription Uploaded!\n\nPrescription ID: ${result.data.prescriptionId}\nStatus: ${result.data.status}\nProcessing time: ${result.data.estimatedProcessingTime}\n\n${result.data.message}`);
-          }
-        } catch (error) {
-          alert('Failed to upload prescription. Please try again.');
-        }
-      }
-    };
-    input.click();
-  };
-
-
 
   return (
     <>
@@ -113,14 +80,6 @@ export default function Hero() {
                 >
                   <FiHome /> Book Home Visit
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="gap-2"
-                  onClick={handlePrescriptionUpload}
-                >
-                  <FiUpload /> Upload Prescription
-                </Button>
               </div>
 
               {/* Stats */}
@@ -149,7 +108,7 @@ export default function Hero() {
             >
               <div className="relative w-full h-[400px] md:h-[500px] rounded-3xl overflow-hidden bg-gradient-to-br from-blue-500 via-teal-500 to-cyan-500 flex items-center justify-center shadow-2xl border-4 border-white/50">
                 <div className="text-white text-center p-8">
-                  <FiActivity className="mx-auto mb-4 animate-pulse" size={80} />
+                  <DNALogo size={160} className="mx-auto mb-6" animate={true} />
                   <h3 className="text-2xl font-bold mb-2">Advanced Diagnostics</h3>
                   <p className="text-blue-100">Precision. Care. Trust.</p>
                 </div>

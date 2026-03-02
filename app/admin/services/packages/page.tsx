@@ -76,12 +76,22 @@ export default function PackagesManagementPage() {
         body: JSON.stringify(packageData),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
         fetchPackages();
         closeModal();
+        const source = data.source || 'database';
+        const sourceMsg = source === 'json' || source === 'json-fallback' 
+          ? ' (saved to local file - Supabase unavailable)' 
+          : '';
+        alert(`✅ Package ${editingPackage ? 'updated' : 'created'} successfully!${sourceMsg}`);
+      } else {
+        alert(`❌ Error: ${data.error || 'Failed to save package'}\n\n${data.details || ''}\n\n${data.hint || 'Please check your Supabase project status.'}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving package:', error);
+      alert(`❌ Network error: ${error.message || 'Failed to connect to server.'}\n\nPlease check:\n1. Your internet connection\n2. Supabase project is active (not paused)\n3. Server is running`);
     }
   };
 

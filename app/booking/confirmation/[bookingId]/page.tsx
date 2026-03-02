@@ -21,59 +21,36 @@ export default function BookingConfirmationPage() {
 
   const fetchBooking = async () => {
     try {
-      // Check if it's a mock booking
-      if (bookingId.startsWith('BK-')) {
-        // Try to fetch from database first
-        if (typeof window !== 'undefined') {
-          const { supabase } = await import('@/lib/supabase/client');
-          
-          if (supabase) {
-            const { data, error } = await supabase
-              .from('bookings')
-              .select(`
-                *,
-                items:booking_items(*)
-              `)
-              .eq('booking_id', bookingId)
-              .single();
+      // Always try to fetch from database first
+      if (typeof window !== 'undefined') {
+        const { supabase } = await import('@/lib/supabase/client');
+        
+        if (supabase) {
+          const { data, error } = await supabase
+            .from('bookings')
+            .select(`
+              *,
+              items:booking_items(*)
+            `)
+            .eq('booking_id', bookingId)
+            .single();
 
-            if (!error && data) {
-              setBooking(data as any);
-              setLoading(false);
-              return;
-            }
+          if (!error && data) {
+            setBooking(data as any);
+            setLoading(false);
+            return;
+          } else {
+            console.error('Error fetching booking:', error);
           }
         }
-        
-        // If database fetch fails or not configured, create mock booking
-        const mockBooking: any = {
-          id: bookingId,
-          booking_id: bookingId,
-          user_name: 'Test User',
-          user_email: 'test@example.com',
-          user_phone: '1234567890',
-          user_address: 'Test Address',
-          subtotal: 1000,
-          discount_amount: 100,
-          tax_amount: 0,
-          total_amount: 900,
-          status: 'pending',
-          payment_status: 'paid',
-          created_at: new Date().toISOString(),
-          items: [
-            {
-              id: '1',
-              service_name: 'Sample Test',
-              service_type: 'test',
-              quantity: 1,
-              price: 1000,
-            }
-          ],
-        };
-        setBooking(mockBooking);
       }
+      
+      // If database fetch fails, show error instead of mock data
+      console.error('Unable to fetch booking from database');
+      setBooking(null);
     } catch (error) {
       console.error('Error fetching booking:', error);
+      setBooking(null);
     } finally {
       setLoading(false);
     }
@@ -140,11 +117,41 @@ export default function BookingConfirmationPage() {
           <p className="text-3xl font-bold tracking-wider">{booking.booking_id}</p>
         </motion.div>
 
-        {/* Email Confirmation Notice */}
+        {/* Payment Notice */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
+          className="bg-orange-50 dark:bg-orange-900/20 border-2 border-orange-200 dark:border-orange-800 rounded-2xl p-4 mb-6"
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/40 rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-2xl">💳</span>
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-gray-900 dark:text-white mb-2">
+                Payment: Pay on Service
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                No payment required now. Our team will call you to confirm your booking and discuss payment options.
+              </p>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 mt-2">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                  📞 Contact: 9003130800
+                </p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  You can also call us to confirm your booking and make payment arrangements
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Email Confirmation Notice */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
           className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-2xl p-4 mb-6 flex items-start gap-3"
         >
           <FiMail className="text-blue-600 flex-shrink-0 mt-1" size={20} />
@@ -185,7 +192,7 @@ export default function BookingConfirmationPage() {
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Invoice #: {booking.booking_id}<br />
                   Date: {new Date(booking.created_at).toLocaleDateString()}<br />
-                  Status: <span className="text-green-600 font-semibold">PAID</span>
+                  Status: <span className="text-orange-600 font-semibold">PENDING PAYMENT</span>
                 </p>
               </div>
             </div>
@@ -260,9 +267,11 @@ export default function BookingConfirmationPage() {
 
           {/* Terms */}
           <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Terms & Conditions:</h4>
+            <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Payment & Terms:</h4>
             <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-              <li>• Sample collection within 24 hours of booking</li>
+              <li>• <strong>Payment:</strong> Pay on service - Our team will call you to confirm and discuss payment options</li>
+              <li>• <strong>Payment Methods:</strong> Cash, UPI, Card (during consultation call or at service time)</li>
+              <li>• Sample collection within 24 hours of booking confirmation</li>
               <li>• Reports will be available within specified time frame</li>
               <li>• Fasting required for certain tests as indicated</li>
               <li>• Please keep this invoice for your records</li>
@@ -301,25 +310,76 @@ export default function BookingConfirmationPage() {
               <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold">
                 1
               </div>
-              <p className="text-gray-700 dark:text-gray-300">
-                Our team will call you within 2 hours to confirm the appointment time
-              </p>
+              <div>
+                <p className="text-gray-700 dark:text-gray-300 font-semibold mb-1">
+                  We'll Call You (Within 2 Hours)
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Our team will call you at <strong>{booking.user_phone}</strong> to confirm your booking, discuss payment options, and schedule the sample collection time.
+                </p>
+              </div>
             </div>
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold">
                 2
               </div>
-              <p className="text-gray-700 dark:text-gray-300">
-                A trained phlebotomist will visit your address for sample collection
-              </p>
+              <div>
+                <p className="text-gray-700 dark:text-gray-300 font-semibold mb-1">
+                  Confirm Payment Method
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  During the call, you can choose to pay via UPI, Card, or Cash. You can also pay when our phlebotomist arrives.
+                </p>
+              </div>
             </div>
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold">
                 3
               </div>
-              <p className="text-gray-700 dark:text-gray-300">
-                Reports will be available within 24-48 hours via email
-              </p>
+              <div>
+                <p className="text-gray-700 dark:text-gray-300 font-semibold mb-1">
+                  Sample Collection at Your Doorstep
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  A trained phlebotomist will visit your address at the scheduled time for safe and hygienic sample collection.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold">
+                4
+              </div>
+              <div>
+                <p className="text-gray-700 dark:text-gray-300 font-semibold mb-1">
+                  Get Your Reports
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Reports will be available within 24-48 hours via email at <strong>{booking.user_email}</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Contact Card */}
+          <div className="mt-4 bg-white dark:bg-gray-800 rounded-xl p-4 border-2 border-blue-200 dark:border-blue-800">
+            <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+              Need to talk to us now?
+            </p>
+            <div className="flex items-center gap-4 flex-wrap">
+              <a 
+                href="tel:9003130800" 
+                className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold"
+              >
+                <span className="text-xl">📞</span>
+                <span>9003130800</span>
+              </a>
+              <a 
+                href="mailto:support@new10lab.com" 
+                className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold"
+              >
+                <span className="text-xl">✉️</span>
+                <span>support@new10lab.com</span>
+              </a>
             </div>
           </div>
         </motion.div>

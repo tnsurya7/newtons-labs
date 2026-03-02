@@ -6,51 +6,66 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const query = searchParams.get('q')?.toLowerCase() || '';
     
-    if (!query || query.length < 2) {
+    if (!query) {
       return NextResponse.json({ results: [] });
     }
 
-    // Check if Supabase is configured
-    if (!supabase) {
-      // Fallback to JSON file search
+    // Always try JSON file search first (faster and more reliable)
+    try {
       const testsData = await import('@/lib/data/tests.json');
       const results: any[] = [];
 
       // Search tests
-      testsData.frequentlyBookedTests.forEach((test: any) => {
-        if (test.name.toLowerCase().includes(query)) {
-          results.push({
-            id: test.id,
-            name: test.name,
-            type: 'test',
-            price: test.price,
-            originalPrice: test.originalPrice,
-            discount: test.discount,
-            details: `${test.parameters} parameters • ${test.reportTime}`,
-          });
-        }
-      });
+      if (testsData.frequentlyBookedTests) {
+        testsData.frequentlyBookedTests.forEach((test: any) => {
+          if (test.name.toLowerCase().includes(query) || 
+              (test.category && test.category.toLowerCase().includes(query))) {
+            results.push({
+              id: test.id,
+              name: test.name,
+              type: 'test',
+              price: test.price,
+              originalPrice: test.originalPrice,
+              discount: test.discount,
+              details: `${test.parameters} parameters • ${test.reportTime}`,
+            });
+          }
+        });
+      }
 
       // Search packages
-      testsData.healthPackages.forEach((pkg: any) => {
-        if (pkg.name.toLowerCase().includes(query)) {
-          results.push({
-            id: pkg.id,
-            name: pkg.name,
-            type: 'package',
-            price: pkg.price,
-            originalPrice: pkg.originalPrice,
-            discount: pkg.discount,
-            details: `${pkg.tests} tests included`,
-            popular: pkg.popular,
-          });
-        }
+      if (testsData.healthPackages) {
+        testsData.healthPackages.forEach((pkg: any) => {
+          if (pkg.name.toLowerCase().includes(query)) {
+            results.push({
+              id: pkg.id,
+              name: pkg.name,
+              type: 'package',
+              price: pkg.price,
+              originalPrice: pkg.originalPrice,
+              discount: pkg.discount,
+              details: `${pkg.tests} tests included`,
+              popular: pkg.popular,
+            });
+          }
+        });
+      }
+
+      // Sort by relevance
+      results.sort((a, b) => {
+        const aExact = a.name.toLowerCase().startsWith(query);
+        const bExact = b.name.toLowerCase().startsWith(query);
+        if (aExact && !bExact) return -1;
+        if (!aExact && bExact) return 1;
+        return a.name.localeCompare(b.name);
       });
 
       return NextResponse.json({ 
         results: results.slice(0, 10),
         total: results.length 
       });
+    } catch (jsonError) {
+      console.error('JSON search failed, trying Supabase:', jsonError);
     }
 
     const results: any[] = [];

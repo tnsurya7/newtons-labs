@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiX, FiLock, FiUser, FiShoppingCart } from 'react-icons/fi';
 import { useRouter } from 'next/navigation';
@@ -19,6 +20,17 @@ export default function LoginRequiredModal({
   feature = 'this feature'
 }: LoginRequiredModalProps) {
   const router = useRouter();
+
+  // Auto-close after 3 seconds
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        onClose();
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, onClose]);
 
   const handleLogin = () => {
     onClose();
@@ -64,6 +76,16 @@ export default function LoginRequiredModal({
                     <FiLock size={28} />
                   </div>
                   <h2 className="text-xl font-bold">Login Required</h2>
+                  <p className="text-xs text-blue-100 mt-1">Auto-closing in 3 seconds...</p>
+                </div>
+                {/* Progress bar */}
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+                  <motion.div
+                    initial={{ width: '100%' }}
+                    animate={{ width: '0%' }}
+                    transition={{ duration: 3, ease: 'linear' }}
+                    className="h-full bg-white"
+                  />
                 </div>
               </div>
 

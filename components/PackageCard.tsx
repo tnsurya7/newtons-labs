@@ -70,6 +70,7 @@ export default function PackageCard({
     <motion.div
       whileHover={{ y: -8, scale: 1.02 }}
       transition={{ duration: 0.3 }}
+      className="h-full"
     >
       <Card
         glass
@@ -100,7 +101,7 @@ export default function PackageCard({
         </div>
 
         {/* Features */}
-        <ul className="space-y-2 mb-6 flex-grow">
+        <ul className="space-y-2 mb-6 flex-1">
           {features.map((feature, index) => (
             <li key={index} className="flex items-start gap-2 text-sm">
               <FiCheck className="text-green-600 mt-0.5 flex-shrink-0" size={16} />

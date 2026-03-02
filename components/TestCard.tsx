@@ -72,6 +72,7 @@ export default function TestCard({
     <motion.div
       whileHover={{ y: -8 }}
       transition={{ duration: 0.3 }}
+      className="h-full"
     >
       <Card className="h-full flex flex-col relative overflow-hidden group hover:shadow-2xl border-2 border-blue-100 dark:border-gray-700">
         {/* Discount Badge */}
@@ -85,7 +86,7 @@ export default function TestCard({
         </h3>
 
         {/* Test Details */}
-        <div className="flex flex-wrap gap-3 mb-4 text-sm text-gray-600 dark:text-gray-400">
+        <div className="flex flex-wrap gap-3 mb-4 text-sm text-gray-600 dark:text-gray-400 min-h-[24px]">
           <div className="flex items-center gap-1">
             <FiActivity className="text-blue-600" />
             <span>{parameters} Parameters</span>
@@ -97,8 +98,13 @@ export default function TestCard({
         </div>
 
         {fasting && (
-          <div className="mb-4">
+          <div className="mb-4 min-h-[28px]">
             <Badge variant="warning">Fasting Required</Badge>
+          </div>
+        )}
+
+        {!fasting && (
+          <div className="mb-4 min-h-[28px]">
           </div>
         )}
 

@@ -288,59 +288,87 @@
   "healthConcerns": [
     {
       "id": "c1",
-      "name": "Fever",
-      "icon": "Thermometer",
-      "tests": 12,
-      "color": "from-red-400 to-orange-400"
-    },
-    {
-      "id": "c2",
-      "name": "Diabetes",
-      "icon": "Droplet",
-      "tests": 18,
-      "color": "from-blue-400 to-cyan-400"
-    },
-    {
-      "id": "c3",
-      "name": "Kidney",
-      "icon": "Filter",
-      "tests": 15,
+      "name": "Immunity",
+      "icon": "AlertCircle",
+      "tests": 152,
       "color": "from-purple-400 to-pink-400"
     },
     {
-      "id": "c4",
-      "name": "Liver",
-      "icon": "Heart",
-      "tests": 14,
-      "color": "from-green-400 to-teal-400"
+      "id": "c2",
+      "name": "Infections",
+      "icon": "Thermometer",
+      "tests": 113,
+      "color": "from-red-400 to-orange-400"
     },
     {
-      "id": "c5",
-      "name": "Thyroid",
-      "icon": "Zap",
-      "tests": 10,
-      "color": "from-indigo-400 to-purple-400"
-    },
-    {
-      "id": "c6",
-      "name": "Heart",
-      "icon": "Heart",
-      "tests": 20,
+      "id": "c3",
+      "name": "Blood Tests",
+      "icon": "Droplet",
+      "tests": 40,
       "color": "from-rose-400 to-red-400"
     },
     {
+      "id": "c4",
+      "name": "Kidney",
+      "icon": "Filter",
+      "tests": 37,
+      "color": "from-blue-400 to-cyan-400"
+    },
+    {
+      "id": "c5",
+      "name": "Liver",
+      "icon": "Heart",
+      "tests": 34,
+      "color": "from-green-400 to-teal-400"
+    },
+    {
+      "id": "c6",
+      "name": "Allergy",
+      "icon": "AlertCircle",
+      "tests": 31,
+      "color": "from-pink-400 to-rose-400"
+    },
+    {
       "id": "c7",
-      "name": "Vitamin",
-      "icon": "Sun",
-      "tests": 16,
-      "color": "from-yellow-400 to-orange-400"
+      "name": "Hormones",
+      "icon": "Zap",
+      "tests": 19,
+      "color": "from-indigo-400 to-purple-400"
     },
     {
       "id": "c8",
-      "name": "Allergy",
-      "icon": "AlertCircle",
-      "tests": 25,
-      "color": "from-pink-400 to-rose-400"
+      "name": "Diabetes",
+      "icon": "Droplet",
+      "tests": 17,
+      "color": "from-cyan-400 to-blue-400"
+    },
+    {
+      "id": "c9",
+      "name": "Heart",
+      "icon": "Heart",
+      "tests": 14,
+      "color": "from-red-400 to-pink-400"
+    },
+    {
+      "id": "c10",
+      "name": "Thyroid",
+      "icon": "Zap",
+      "tests": 12,
+      "color": "from-purple-400 to-indigo-400"
+    },
+    {
+      "id": "c11",
+      "name": "Fever",
+      "icon": "Thermometer",
+      "tests": 6,
+      "color": "from-orange-400 to-red-400"
+    },
+    {
+      "id": "c12",
+      "name": "Vitamin",
+      "icon": "Sun",
+      "tests": 5,
+      "color": "from-yellow-400 to-orange-400"
     }
   ],
   "radiologyServices": []

@@ -48,14 +48,14 @@ export default function HealthConcerns() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
           {testsData.healthConcerns.map((concern, index) => (
             <motion.div
               key={concern.id}
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: index * 0.05 }}
               whileHover={{ scale: 1.05 }}
               className="cursor-pointer h-full"
               onClick={() => router.push(`/health-concerns/${concern.id}`)}

@@ -14,6 +14,10 @@ const colorMap: { [key: string]: string } = {
   'from-rose-400 to-red-400': 'bg-gradient-to-br from-rose-400 to-red-400',
   'from-yellow-400 to-orange-400': 'bg-gradient-to-br from-yellow-400 to-orange-400',
   'from-pink-400 to-rose-400': 'bg-gradient-to-br from-pink-400 to-rose-400',
+  'from-cyan-400 to-blue-400': 'bg-gradient-to-br from-cyan-400 to-blue-400',
+  'from-red-400 to-pink-400': 'bg-gradient-to-br from-red-400 to-pink-400',
+  'from-purple-400 to-indigo-400': 'bg-gradient-to-br from-purple-400 to-indigo-400',
+  'from-orange-400 to-red-400': 'bg-gradient-to-br from-orange-400 to-red-400',
 };
 
 const iconMap: { [key: string]: React.ReactNode } = {
@@ -48,7 +52,7 @@ export default function HealthConcerns() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {testsData.healthConcerns.map((concern, index) => (
             <motion.div
               key={concern.id}

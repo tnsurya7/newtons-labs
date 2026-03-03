@@ -50,20 +50,31 @@ export default function Home() {
                 </span>
               </h2>
               <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                Most popular diagnostic tests with up to 60% discount
+                Most popular diagnostic tests with up to 77% discount
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {testsData.frequentlyBookedTests.map((test) => (
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {testsData.frequentlyBookedTests.slice(0, 8).map((test) => (
                 <TestCard key={test.id} {...test} />
               ))}
+            </div>
+
+            {/* View All Button */}
+            <div className="text-center">
+              <Button
+                onClick={() => router.push('/tests')}
+                size="lg"
+                variant="primary"
+              >
+                View All Tests
+              </Button>
             </div>
           </div>
         </section>
 
         {/* Popular Health Packages */}
-        <section id="packages" className="py-16 bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <section id="packages" className="py-16 pb-14 bg-white dark:bg-gray-900">
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -81,10 +92,15 @@ export default function Home() {
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {testsData.healthPackages.map((pkg) => (
-                <PackageCard key={pkg.id} {...pkg} />
-              ))}
+            {/* Horizontal Scrollable Container */}
+            <div className="overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4">
+              <div className="flex gap-6 py-2" style={{ minWidth: 'min-content' }}>
+                {testsData.healthPackages.map((pkg) => (
+                  <div key={pkg.id} className="flex-shrink-0 w-[280px] h-[510px]">
+                    <PackageCard {...pkg} />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>

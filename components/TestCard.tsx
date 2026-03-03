@@ -40,6 +40,11 @@ export default function TestCard({
   const [showToast, setShowToast] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
+  // Swap display: Show MRP as main price, calculate higher "original" price
+  const sellingPrice = originalPrice; // MRP from data (1600) - this is what user pays
+  const displayOriginalPrice = Math.round(originalPrice * 1.2); // Add 20% (1920) - for strikethrough
+  const discountPercentage = Math.round(((displayOriginalPrice - sellingPrice) / displayOriginalPrice) * 100);
+
   const handleAddToCart = async () => {
     // Check if user is authenticated
     if (!isAuthenticated) {
@@ -58,8 +63,8 @@ export default function TestCard({
       const result = await response.json();
       
       if (result.success) {
-        // Update local state
-        addItem({ id, name, price, type: 'test' });
+        // Update local state with selling price
+        addItem({ id, name, price: sellingPrice, type: 'test' });
         // Show toast notification
         setShowToast(true);
       }
@@ -77,7 +82,7 @@ export default function TestCard({
       <Card className="h-full flex flex-col relative overflow-hidden group hover:shadow-2xl border-2 border-blue-100 dark:border-gray-700">
         {/* Discount Badge */}
         <div className="absolute top-4 right-4">
-          <Badge variant="success">{discount}% OFF</Badge>
+          <Badge variant="success">{discountPercentage}% OFF</Badge>
         </div>
 
         {/* Test Name */}
@@ -110,13 +115,18 @@ export default function TestCard({
 
         {/* Pricing */}
         <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex items-end gap-2 mb-4">
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">
-              {formatPrice(price)}
-            </span>
-            <span className="text-sm text-gray-500 line-through mb-1">
-              {formatPrice(originalPrice)}
-            </span>
+          <div className="mb-2">
+            <div className="flex items-baseline gap-2 mb-1">
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
+                {formatPrice(sellingPrice)}
+              </span>
+              <span className="text-lg text-gray-500 line-through">
+                {formatPrice(displayOriginalPrice)}
+              </span>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              MRP: {formatPrice(displayOriginalPrice)} (Incl. of all taxes)
+            </p>
           </div>
 
           <Button
@@ -133,7 +143,7 @@ export default function TestCard({
           onClose={() => setShowToast(false)}
           title={name}
           description={`${parameters} Parameters • ${reportTime}`}
-          price={price}
+          price={sellingPrice}
           type="success"
         />
 

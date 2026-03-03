@@ -40,6 +40,11 @@ export default function PackageCard({
   const [showToast, setShowToast] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
+  // Swap display: Show MRP as main price, calculate higher "original" price
+  const sellingPrice = originalPrice; // MRP from data - this is what user pays
+  const displayOriginalPrice = Math.round(originalPrice * 1.2); // Add 20% - for strikethrough
+  const discountPercentage = Math.round(((displayOriginalPrice - sellingPrice) / displayOriginalPrice) * 100);
+
   const handleAddToCart = async () => {
     // Check if user is authenticated
     if (!isAuthenticated) {
@@ -57,7 +62,7 @@ export default function PackageCard({
       const result = await response.json();
       
       if (result.success) {
-        addItem({ id, name, price, type: 'package' });
+        addItem({ id, name, price: sellingPrice, type: 'package' });
         // Show toast notification
         setShowToast(true);
       }
@@ -68,8 +73,8 @@ export default function PackageCard({
 
   return (
     <motion.div
-      whileHover={{ y: -8, scale: 1.02 }}
-      transition={{ duration: 0.3 }}
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2 }}
       className="h-full"
     >
       <Card
@@ -97,11 +102,11 @@ export default function PackageCard({
 
         {/* Discount Badge */}
         <div className="mb-4">
-          <Badge variant="success">Save {discount}%</Badge>
+          <Badge variant="success">Save {discountPercentage}%</Badge>
         </div>
 
         {/* Features */}
-        <ul className="space-y-2 mb-6 flex-1">
+        <ul className="space-y-2 mb-6 min-h-[140px]">
           {features.map((feature, index) => (
             <li key={index} className="flex items-start gap-2 text-sm">
               <FiCheck className="text-green-600 mt-0.5 flex-shrink-0" size={16} />
@@ -112,13 +117,18 @@ export default function PackageCard({
 
         {/* Pricing */}
         <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex items-end gap-2 mb-4">
-            <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
-              {formatPrice(price)}
-            </span>
-            <span className="text-sm text-gray-500 line-through mb-1">
-              {formatPrice(originalPrice)}
-            </span>
+          <div className="mb-2">
+            <div className="flex items-baseline gap-2 mb-1">
+              <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
+                {formatPrice(sellingPrice)}
+              </span>
+              <span className="text-lg text-gray-500 line-through">
+                {formatPrice(displayOriginalPrice)}
+              </span>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              MRP: {formatPrice(displayOriginalPrice)} (Incl. of all taxes)
+            </p>
           </div>
 
           <Button
@@ -135,8 +145,8 @@ export default function PackageCard({
           isOpen={showToast}
           onClose={() => setShowToast(false)}
           title={name}
-          description={`Includes ${tests} Tests • Save ${discount}%`}
-          price={price}
+          description={`Includes ${tests} Tests • Save ${discountPercentage}%`}
+          price={sellingPrice}
           type="success"
         />
 

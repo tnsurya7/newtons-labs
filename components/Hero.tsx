@@ -82,19 +82,21 @@ export default function Hero() {
                 </Button>
               </div>
 
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-4 mt-12">
-                <div>
-                  <h3 className="text-3xl font-bold text-blue-600">250+</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Cities</p>
+              {/* Quality Highlights */}
+              <div className="grid grid-cols-2 gap-6 mt-12 max-w-md">
+                <div className="text-center">
+                  <div className="w-14 h-14 mx-auto mb-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <FiHome className="text-white" size={28} />
+                  </div>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">Home Visit</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">Available</p>
                 </div>
-                <div>
-                  <h3 className="text-3xl font-bold text-teal-600">10M+</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Tests/Year</p>
-                </div>
-                <div>
-                  <h3 className="text-3xl font-bold text-purple-600">NABL</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Certified</p>
+                <div className="text-center">
+                  <div className="w-14 h-14 mx-auto mb-3 bg-gradient-to-br from-teal-500 to-green-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <FiActivity className="text-white" size={28} />
+                  </div>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">Chennai</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">600102</p>
                 </div>
               </div>
             </motion.div>
@@ -118,15 +120,15 @@ export default function Hero() {
               <motion.div
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 3, repeat: Infinity }}
-                className="absolute top-8 -left-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 max-w-[200px] border-2 border-green-200 dark:border-green-800"
+                className="absolute top-8 -left-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 max-w-[200px] border-2 border-teal-200 dark:border-teal-800"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 dark:bg-green-900 rounded-xl flex items-center justify-center text-2xl shadow-lg">
+                  <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-cyan-500 dark:bg-teal-900 rounded-xl flex items-center justify-center text-2xl shadow-lg">
                     ✓
                   </div>
                   <div>
-                    <p className="font-semibold text-sm">NABL Certified</p>
-                    <p className="text-xs text-gray-500">100% Accurate</p>
+                    <p className="font-semibold text-sm">Quality Testing</p>
+                    <p className="text-xs text-gray-500">Accurate Results</p>
                   </div>
                 </div>
               </motion.div>
@@ -141,7 +143,7 @@ export default function Hero() {
                     <FiHome size={24} className="text-white" />
                   </div>
                   <div>
-                    <p className="font-semibold text-sm">Free Home Visit</p>
+                    <p className="font-semibold text-sm">Home Visit</p>
                     <p className="text-xs text-gray-500">Safe & Convenient</p>
                   </div>
                 </div>

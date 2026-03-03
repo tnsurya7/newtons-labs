@@ -151,15 +151,14 @@ export default function Header() {
               />
             </div>
 
-            {/* Location */}
+            {/* Location - Fixed, Non-editable */}
             <div
-              className="hidden lg:flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-xl cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              onClick={() => setShowLocationModal(true)}
+              className="hidden lg:flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-xl"
             >
               <FiMapPin className="text-blue-600" />
               <div>
                 <p className="text-xs text-gray-500 dark:text-gray-400">Location</p>
-                <p className="text-sm font-semibold">{city} {pincode}</p>
+                <p className="text-sm font-semibold">Chennai 600102</p>
               </div>
             </div>
 
@@ -419,18 +418,17 @@ export default function Header() {
             </AnimatePresence>
           </div>
 
-          {/* Mobile Location */}
+          {/* Mobile Location - Fixed, Non-editable */}
           <div className="lg:hidden mt-4">
-            <button
-              onClick={() => setShowLocationModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            <div
+              className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-xl"
             >
               <FiMapPin className="text-blue-600" />
               <div className="text-left">
                 <p className="text-xs text-gray-500 dark:text-gray-400">Location</p>
-                <p className="text-sm font-semibold">{city} {pincode}</p>
+                <p className="text-sm font-semibold">Chennai 600102</p>
               </div>
-            </button>
+            </div>
           </div>
         </div>
 
@@ -448,24 +446,10 @@ export default function Header() {
               <a href="#packages" className="px-4 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                 Packages
               </a>
-              <button
-                onClick={() => setShowLocationModal(true)}
-                className="px-4 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left"
-              >
-                Locations
-              </button>
             </nav>
           </motion.div>
         )}
       </header>
-
-      {/* Location Modal */}
-      <LocationModal
-        isOpen={showLocationModal}
-        onClose={() => setShowLocationModal(false)}
-        onLocationSelect={handleLocationSelect}
-        currentLocation={{ city, pincode }}
-      />
 
       {/* Support Modal */}
       <SupportModal

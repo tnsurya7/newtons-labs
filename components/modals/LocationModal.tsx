@@ -97,7 +97,7 @@ export default function LocationModal({
         (position) => {
           // In a real app, you'd reverse geocode these coordinates
           // For now, we'll simulate with Chennai
-          setPincode('600001');
+          setPincode('600102');
           handleSearch();
         },
         (error) => {
@@ -110,12 +110,7 @@ export default function LocationModal({
   };
 
   const popularCities = [
-    { name: 'Chennai', pincode: '600001' },
-    { name: 'Bangalore', pincode: '560001' },
-    { name: 'Mumbai', pincode: '400001' },
-    { name: 'Delhi', pincode: '110001' },
-    { name: 'Hyderabad', pincode: '500001' },
-    { name: 'Pune', pincode: '411001' },
+    { name: 'Chennai', pincode: '600102' },
   ];
 
   return (

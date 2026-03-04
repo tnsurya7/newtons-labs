@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { validateEmail, hashPassword } from '@/lib/auth/security';
+import { createClient } from '@supabase/supabase-js';
+import bcrypt from 'bcryptjs';
+import { validateEmail } from '@/lib/auth/security';
 
-// Mock user database (in production, use a real database)
-// For testing, users created via signup will be stored here
-const mockUsers: Array<{
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  password: string;
-  createdAt: string;
-}> = [];
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,15 +35,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash the password
-    const hashedPassword = await hashPassword(password);
+    // Find user in database
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('id, name, email, phone, password_hash, role, status, created_at')
+      .eq('email', email.toLowerCase())
+      .single();
 
-    // Find user in mock database
-    const user = mockUsers.find(
-      (u) => u.email === email && u.password === hashedPassword
-    );
-
-    if (!user) {
+    if (error || !user) {
       return NextResponse.json(
         {
           success: false,
@@ -57,23 +52,61 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate JWT token (in production, use proper JWT library)
+    // Check if user is blocked
+    if (user.status === 'blocked') {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Your account has been blocked. Please contact support.',
+        },
+        { status: 403 }
+      );
+    }
+
+    // Verify password
+    const passwordMatch = await bcrypt.compare(password, user.password_hash);
+
+    if (!passwordMatch) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Invalid email or password',
+        },
+        { status: 401 }
+      );
+    }
+
+    // Log activity
+    await supabase.from('activity_logs').insert([
+      {
+        user_id: user.id,
+        action: 'user_login',
+        description: `User logged in: ${email}`,
+      },
+    ]);
+
+    // Generate JWT token
     const token = Buffer.from(
       JSON.stringify({
         userId: user.id,
         email: user.email,
+        role: user.role,
         exp: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
       })
     ).toString('base64');
-
-    // Return user data without password
-    const { password: _, ...userWithoutPassword } = user;
 
     return NextResponse.json({
       success: true,
       message: 'Login successful',
       data: {
-        user: userWithoutPassword,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+          createdAt: user.created_at,
+        },
         token,
       },
     });

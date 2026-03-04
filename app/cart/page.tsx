@@ -32,8 +32,7 @@ export default function CartPage() {
   }, [mounted, isAuthenticated, router]);
 
   const subtotal = items.reduce((sum, item) => sum + item.price, 0);
-  const discount = Math.floor(subtotal * 0.1); // 10% discount
-  const total = subtotal - discount;
+  const total = subtotal; // No discount applied
 
   const handleCheckout = () => {
     setShowCheckoutForm(true);
@@ -241,11 +240,6 @@ export default function CartPage() {
                     <div className="flex justify-between text-gray-600 dark:text-gray-400">
                       <span>Subtotal ({totalItems} items)</span>
                       <span className="font-semibold">{formatPrice(subtotal)}</span>
-                    </div>
-
-                    <div className="flex justify-between text-green-600">
-                      <span>Discount (10%)</span>
-                      <span className="font-semibold">-{formatPrice(discount)}</span>
                     </div>
 
                     <div className="flex justify-between text-gray-600 dark:text-gray-400">

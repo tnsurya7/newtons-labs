@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { generateBookingConfirmationEmail } from '@/lib/email/templates';
 
 function generateBookingId(): string {
   const timestamp = Date.now().toString(36).toUpperCase();
@@ -63,6 +64,32 @@ export async function POST(request: NextRequest) {
     };
 
     console.log('Booking created successfully:', bookingId);
+
+    // Send confirmation email to customer
+    try {
+      const emailHtml = generateBookingConfirmationEmail(booking);
+      
+      const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/email/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: user.email,
+          subject: `Booking Confirmation - ${bookingId} | New10Labs`,
+          html: emailHtml,
+        }),
+      });
+
+      const emailResult = await emailResponse.json();
+      
+      if (emailResult.success) {
+        console.log('✅ Confirmation email sent to:', user.email);
+      } else {
+        console.error('❌ Failed to send confirmation email:', emailResult);
+      }
+    } catch (emailError) {
+      console.error('❌ Email sending error:', emailError);
+      // Don't fail the booking if email fails
+    }
 
     return NextResponse.json({
       success: true,

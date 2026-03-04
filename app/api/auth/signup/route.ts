@@ -1,14 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+import bcrypt from 'bcryptjs';
 import {
   validateEmail,
   validatePhone,
   validatePassword,
-  hashPassword,
   sanitizeInput,
 } from '@/lib/auth/security';
 
-// Mock user database (in production, use a real database)
-const mockUsers: any[] = [];
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export async function POST(request: NextRequest) {
   try {
@@ -67,9 +70,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const existingUser = mockUsers.find(
-      (u) => u.email === sanitizedEmail || u.phone === sanitizedPhone
-    );
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('email, phone')
+      .or(`email.eq.${sanitizedEmail},phone.eq.${sanitizedPhone}`)
+      .single();
 
     if (existingUser) {
       return NextResponse.json(
@@ -82,21 +87,42 @@ export async function POST(request: NextRequest) {
     }
 
     // Hash password
-    const hashedPassword = await hashPassword(password);
+    const passwordHash = await bcrypt.hash(password, 10);
 
-    // Create new user
-    const newUser = {
-      id: (mockUsers.length + 1).toString(),
-      name: sanitizedName,
-      email: sanitizedEmail,
-      phone: sanitizedPhone,
-      password: hashedPassword,
-      createdAt: new Date().toISOString(),
-    };
+    // Create user in database
+    const { data: newUser, error } = await supabase
+      .from('users')
+      .insert([
+        {
+          name: sanitizedName,
+          email: sanitizedEmail,
+          phone: sanitizedPhone,
+          password_hash: passwordHash,
+          role: 'user',
+          status: 'active',
+        },
+      ])
+      .select('id, name, email, phone, role, created_at')
+      .single();
 
-    mockUsers.push(newUser);
+    if (error) {
+      console.error('Database error:', error);
+      return NextResponse.json(
+        { success: false, message: 'Failed to create account' },
+        { status: 500 }
+      );
+    }
 
-    // Generate JWT token (in production, use proper JWT library)
+    // Log activity
+    await supabase.from('activity_logs').insert([
+      {
+        user_id: newUser.id,
+        action: 'user_signup',
+        description: `New user registered: ${sanitizedEmail}`,
+      },
+    ]);
+
+    // Generate JWT token
     const token = Buffer.from(
       JSON.stringify({
         userId: newUser.id,
@@ -105,14 +131,18 @@ export async function POST(request: NextRequest) {
       })
     ).toString('base64');
 
-    // Return user data without password
-    const { password: _, ...userWithoutPassword } = newUser;
-
     return NextResponse.json({
       success: true,
       message: 'Account created successfully',
       data: {
-        user: userWithoutPassword,
+        user: {
+          id: newUser.id,
+          name: newUser.name,
+          email: newUser.email,
+          phone: newUser.phone,
+          role: newUser.role,
+          createdAt: newUser.created_at,
+        },
         token,
       },
     });

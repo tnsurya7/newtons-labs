@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     const bookingDate = new Date().toISOString();
 
     // Create booking object
-    const booking = {
+    const booking: any = {
       id: bookingId,
       booking_id: bookingId,
       user_name: user.name,

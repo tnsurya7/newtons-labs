@@ -18,7 +18,7 @@ export async function GET() {
     }
     
     // Transform data to match frontend expectations
-    const packages = data.map(pkg => ({
+    const packages = data.map((pkg: any) => ({
       id: pkg.id,
       name: pkg.name,
       price: pkg.price,

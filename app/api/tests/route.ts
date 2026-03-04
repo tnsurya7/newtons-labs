@@ -42,7 +42,7 @@ export async function GET(request: Request) {
     }
     
     // Transform data to match frontend expectations
-    const tests = data.map(test => ({
+    const tests = data.map((test: any) => ({
       id: test.id,
       name: test.name,
       price: test.price,

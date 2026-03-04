@@ -1,0 +1,54 @@
+[
+  {
+    "id": "25492e92-7275-4f69-a025-8869715c4d39",
+    "name": "Dual Marker With Graph",
+    "category": "CLINICAL BIOCHEMISTRY",
+    "price": 1600,
+    "originalPrice": 6667,
+    "discount": 76,
+    "parameters": 1,
+    "reportTime": "2 Days 0 hr 0 min",
+    "fasting": false,
+    "sampleType": "",
+    "status": "active"
+  },
+  {
+    "id": "165b848e-f278-4aaa-b77a-8d14951fa801",
+    "name": "Quad Marker With Graph",
+    "category": "CLINICAL BIOCHEMISTRY",
+    "price": 2000,
+    "originalPrice": 7407,
+    "discount": 73,
+    "parameters": 1,
+    "reportTime": "2 Days 0 hr 0 min",
+    "fasting": false,
+    "sampleType": "",
+    "status": "active"
+  },
+  {
+    "id": "6cb87af2-f6f8-426a-9b2c-30bf5c8cb38a",
+    "name": "Triple Marker With Graph",
+    "category": "CLINICAL BIOCHEMISTRY",
+    "price": 1500,
+    "originalPrice": 7895,
+    "discount": 81,
+    "parameters": 1,
+    "reportTime": "2 Days 0 hr 0 min",
+    "fasting": false,
+    "sampleType": "",
+    "status": "active"
+  },
+  {
+    "id": "e7030511-4fe7-4581-91cf-8c3f349300a4",
+    "name": "Arthiritis Basic Screen",
+    "category": "PATHOLOGY",
+    "price": 1500,
+    "originalPrice": 10714,
+    "discount": 86,
+    "parameters": 1,
+    "reportTime": "1 Days 0 hr 0 min",
+    "fasting": false,
+    "sampleType": "",
+    "status": "active"
+  }
+]

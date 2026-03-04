@@ -10,72 +10,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ results: [] });
     }
 
-    // Always try JSON file search first (faster and more reliable)
-    try {
-      const testsData = await import('@/lib/data/tests.json');
-      const results: any[] = [];
-
-      // Search tests
-      if (testsData.frequentlyBookedTests) {
-        testsData.frequentlyBookedTests.forEach((test: any) => {
-          if (test.name.toLowerCase().includes(query) || 
-              (test.category && test.category.toLowerCase().includes(query))) {
-            results.push({
-              id: test.id,
-              name: test.name,
-              type: 'test',
-              price: test.price,
-              originalPrice: test.originalPrice,
-              discount: test.discount,
-              details: `${test.parameters} parameters • ${test.reportTime}`,
-            });
-          }
-        });
-      }
-
-      // Search packages
-      if (testsData.healthPackages) {
-        testsData.healthPackages.forEach((pkg: any) => {
-          if (pkg.name.toLowerCase().includes(query)) {
-            results.push({
-              id: pkg.id,
-              name: pkg.name,
-              type: 'package',
-              price: pkg.price,
-              originalPrice: pkg.originalPrice,
-              discount: pkg.discount,
-              details: `${pkg.tests} tests included`,
-              popular: pkg.popular,
-            });
-          }
-        });
-      }
-
-      // Sort by relevance
-      results.sort((a, b) => {
-        const aExact = a.name.toLowerCase().startsWith(query);
-        const bExact = b.name.toLowerCase().startsWith(query);
-        if (aExact && !bExact) return -1;
-        if (!aExact && bExact) return 1;
-        return a.name.localeCompare(b.name);
-      });
-
-      return NextResponse.json({ 
-        results: results.slice(0, 10),
-        total: results.length 
-      });
-    } catch (jsonError) {
-      console.error('JSON search failed, trying Supabase:', jsonError);
-    }
-
     const results: any[] = [];
 
-    // Search tests
+    // Search tests from database
     const { data: tests, error: testsError } = await supabase
       .from('tests')
       .select('*')
       .eq('status', 'active')
-      .or(`name.ilike.%${query}%,category.ilike.%${query}%,description.ilike.%${query}%`);
+      .or(`name.ilike.%${query}%,category.ilike.%${query}%`)
+      .limit(20);
 
     if (!testsError && tests) {
       tests.forEach((test: any) => {
@@ -92,12 +35,13 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Search packages
-    const { data: packages, error: packagesError } = await supabase
+    // Search packages from database
+    const { data: packages, error: packagesError} = await supabase
       .from('packages')
       .select('*')
       .eq('status', 'active')
-      .or(`name.ilike.%${query}%,description.ilike.%${query}%`);
+      .ilike('name', `%${query}%`)
+      .limit(10);
 
     if (!packagesError && packages) {
       packages.forEach((pkg: any) => {

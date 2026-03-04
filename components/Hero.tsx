@@ -8,8 +8,6 @@ import DNALogo from './ui/DNALogo';
 import Button from './ui/Button';
 import LoginRequiredModal from './modals/LoginRequiredModal';
 import { useAuthStore } from '@/store/auth';
-import allTestsData from '@/lib/data/all-tests.json';
-import packagesData from '@/lib/data/packages.json';
 
 export default function Hero() {
   const router = useRouter();
@@ -19,6 +17,7 @@ export default function Hero() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
   const handleHomeVisit = () => {
@@ -30,7 +29,7 @@ export default function Hero() {
     router.push('/home-visit');
   };
 
-  // Handle search
+  // Handle search with API
   useEffect(() => {
     if (searchQuery.trim().length < 2) {
       setSearchResults([]);
@@ -38,30 +37,29 @@ export default function Hero() {
       return;
     }
 
-    const query = searchQuery.toLowerCase();
-    
-    // Search tests
-    const testResults = allTestsData.allTests
-      .filter(test => test.name.toLowerCase().includes(query))
-      .slice(0, 5)
-      .map(test => ({
-        ...test,
-        type: 'test',
-        displayPrice: `₹${test.originalPrice}`
-      }));
+    const searchTimeout = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`);
+        const data = await response.json();
+        
+        if (data.results) {
+          const formattedResults = data.results.map((result: any) => ({
+            ...result,
+            displayPrice: `₹${result.price}`
+          }));
+          setSearchResults(formattedResults);
+          setShowResults(true);
+        }
+      } catch (error) {
+        console.error('Search error:', error);
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300); // Debounce search
 
-    // Search packages
-    const packageResults = packagesData.packages
-      .filter(pkg => pkg.name.toLowerCase().includes(query))
-      .slice(0, 3)
-      .map(pkg => ({
-        ...pkg,
-        type: 'package',
-        displayPrice: `₹${pkg.original_price}`
-      }));
-
-    setSearchResults([...packageResults, ...testResults]);
-    setShowResults(true);
+    return () => clearTimeout(searchTimeout);
   }, [searchQuery]);
 
   // Close dropdown when clicking outside
@@ -193,7 +191,7 @@ export default function Hero() {
                               {result.name}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                              {result.type === 'package' ? `${result.tests_count} tests` : result.category}
+                              {result.type === 'package' ? result.details : result.category}
                             </p>
                           </div>
                           <div className="text-right">

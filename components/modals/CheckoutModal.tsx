@@ -1,17 +1,36 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiX, FiUser, FiPhone, FiMapPin, FiShoppingCart, FiCheck } from 'react-icons/fi';
+import { FiX, FiUser, FiPhone, FiMapPin, FiShoppingCart, FiCheck, FiHash, FiUsers } from 'react-icons/fi';
 import Button from '../ui/Button';
 
 interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { name: string; phone: string; address: string }) => void;
+  onSubmit: (data: PatientFormData) => void;
   totalAmount: number;
   itemCount: number;
 }
+
+export interface PatientFormData {
+  patientId: string;
+  designation: string;
+  name: string;
+  age: string;
+  phone: string;
+  address: string;
+  referral: string;
+}
+
+const DESIGNATIONS = ['Mr', 'Mrs', 'Ms', 'Dr', 'Master', 'Baby'];
+
+// Generate unique patient ID
+const generatePatientId = () => {
+  const timestamp = Date.now().toString().slice(-6);
+  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+  return `NL${timestamp}${random}`;
+};
 
 export default function CheckoutModal({ 
   isOpen, 
@@ -20,26 +39,49 @@ export default function CheckoutModal({
   totalAmount,
   itemCount
 }: CheckoutModalProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<PatientFormData>({
+    patientId: '',
+    designation: 'Mr',
     name: '',
+    age: '',
     phone: '',
     address: '',
+    referral: '',
   });
+
   const [errors, setErrors] = useState({
     name: '',
+    age: '',
     phone: '',
     address: '',
   });
 
+  // Generate patient ID when modal opens
+  useEffect(() => {
+    if (isOpen && !formData.patientId) {
+      setFormData(prev => ({
+        ...prev,
+        patientId: generatePatientId()
+      }));
+    }
+  }, [isOpen, formData.patientId]);
+
   const validateForm = () => {
     const newErrors = {
       name: '',
+      age: '',
       phone: '',
       address: '',
     };
 
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
+    }
+
+    if (!formData.age.trim()) {
+      newErrors.age = 'Age is required';
+    } else if (isNaN(Number(formData.age)) || Number(formData.age) < 0 || Number(formData.age) > 150) {
+      newErrors.age = 'Please enter a valid age';
     }
 
     if (!formData.phone.trim()) {
@@ -53,18 +95,26 @@ export default function CheckoutModal({
     }
 
     setErrors(newErrors);
-    return !newErrors.name && !newErrors.phone && !newErrors.address;
+    return !newErrors.name && !newErrors.age && !newErrors.phone && !newErrors.address;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
       onSubmit(formData);
-      setFormData({ name: '', phone: '', address: '' });
+      setFormData({ 
+        patientId: generatePatientId(),
+        designation: 'Mr',
+        name: '', 
+        age: '',
+        phone: '', 
+        address: '',
+        referral: ''
+      });
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -98,7 +148,7 @@ export default function CheckoutModal({
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
-            <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto border-2 border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border-2 border-gray-200 dark:border-gray-700">
               {/* Header */}
               <div className="relative bg-gradient-to-r from-blue-600 via-teal-600 to-purple-600 text-white p-5">
                 <button
@@ -112,8 +162,8 @@ export default function CheckoutModal({
                     <FiShoppingCart size={24} />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold">Checkout</h2>
-                    <p className="text-sm text-blue-100">Complete your order</p>
+                    <h2 className="text-xl font-bold">Patient Details</h2>
+                    <p className="text-sm text-blue-100">Complete your booking information</p>
                   </div>
                 </div>
               </div>
@@ -136,8 +186,41 @@ export default function CheckoutModal({
                   </div>
                 </div>
 
+                {/* Patient ID (Read-only) */}
+                <div className="mb-5 p-4 bg-gradient-to-r from-blue-50 to-teal-50 dark:from-blue-900/20 dark:to-teal-900/20 rounded-xl border-2 border-blue-200 dark:border-blue-800">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                      <FiHash className="text-white" size={20} />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Patient ID</p>
+                      <p className="text-lg font-bold text-blue-600">{formData.patientId}</p>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Form Fields */}
-                <div className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  {/* Designation */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Title <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <FiUsers className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <select
+                        name="designation"
+                        value={formData.designation}
+                        onChange={handleChange}
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-blue-600 bg-white dark:bg-gray-800 outline-none transition-colors text-sm appearance-none cursor-pointer"
+                      >
+                        {DESIGNATIONS.map(title => (
+                          <option key={title} value={title}>{title}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
                   {/* Name */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -150,7 +233,7 @@ export default function CheckoutModal({
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        placeholder="Enter your full name"
+                        placeholder="Enter full name"
                         className={`w-full pl-10 pr-4 py-2.5 rounded-xl border-2 ${
                           errors.name 
                             ? 'border-red-500 focus:border-red-600' 
@@ -160,6 +243,30 @@ export default function CheckoutModal({
                     </div>
                     {errors.name && (
                       <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+                    )}
+                  </div>
+
+                  {/* Age */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Age <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      name="age"
+                      value={formData.age}
+                      onChange={handleChange}
+                      placeholder="Enter age"
+                      min="0"
+                      max="150"
+                      className={`w-full px-4 py-2.5 rounded-xl border-2 ${
+                        errors.age 
+                          ? 'border-red-500 focus:border-red-600' 
+                          : 'border-gray-200 dark:border-gray-700 focus:border-blue-600'
+                      } bg-white dark:bg-gray-800 outline-none transition-colors text-sm`}
+                    />
+                    {errors.age && (
+                      <p className="text-red-500 text-xs mt-1">{errors.age}</p>
                     )}
                   </div>
 
@@ -187,31 +294,46 @@ export default function CheckoutModal({
                       <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
                     )}
                   </div>
+                </div>
 
-                  {/* Address */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Address <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <FiMapPin className="absolute left-3 top-3 text-gray-400" size={18} />
-                      <textarea
-                        name="address"
-                        value={formData.address}
-                        onChange={handleChange}
-                        placeholder="Enter your complete address for sample collection"
-                        rows={3}
-                        className={`w-full pl-10 pr-4 py-2.5 rounded-xl border-2 ${
-                          errors.address 
-                            ? 'border-red-500 focus:border-red-600' 
-                            : 'border-gray-200 dark:border-gray-700 focus:border-blue-600'
-                        } bg-white dark:bg-gray-800 outline-none transition-colors resize-none text-sm`}
-                      />
-                    </div>
-                    {errors.address && (
-                      <p className="text-red-500 text-xs mt-1">{errors.address}</p>
-                    )}
+                {/* Address */}
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Address <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <FiMapPin className="absolute left-3 top-3 text-gray-400" size={18} />
+                    <textarea
+                      name="address"
+                      value={formData.address}
+                      onChange={handleChange}
+                      placeholder="Enter complete address for sample collection"
+                      rows={3}
+                      className={`w-full pl-10 pr-4 py-2.5 rounded-xl border-2 ${
+                        errors.address 
+                          ? 'border-red-500 focus:border-red-600' 
+                          : 'border-gray-200 dark:border-gray-700 focus:border-blue-600'
+                      } bg-white dark:bg-gray-800 outline-none transition-colors resize-none text-sm`}
+                    />
                   </div>
+                  {errors.address && (
+                    <p className="text-red-500 text-xs mt-1">{errors.address}</p>
+                  )}
+                </div>
+
+                {/* Referral (Optional) */}
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Referral (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    name="referral"
+                    value={formData.referral}
+                    onChange={handleChange}
+                    placeholder="Doctor name or referral code"
+                    className="w-full px-4 py-2.5 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-blue-600 bg-white dark:bg-gray-800 outline-none transition-colors text-sm"
+                  />
                 </div>
 
                 {/* Benefits */}

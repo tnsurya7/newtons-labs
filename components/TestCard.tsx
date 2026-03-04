@@ -63,8 +63,18 @@ export default function TestCard({
       const result = await response.json();
       
       if (result.success) {
-        // Update local state with selling price
-        addItem({ id, name, price: sellingPrice, type: 'test' });
+        // Update local state with all required fields
+        addItem({ 
+          id, 
+          name, 
+          price: sellingPrice, 
+          originalPrice: sellingPrice,
+          type: 'test',
+          discount: discountPercentage,
+          category: 'Diagnostic Test',
+          parameters,
+          reportTime
+        });
         // Show toast notification
         setShowToast(true);
       }

@@ -112,14 +112,6 @@ export default function Footer() {
                     Book Home Visit
                   </button>
                 </li>
-                <li>
-                  <button 
-                    onClick={() => setShowSupportModal(true)}
-                    className="hover:text-blue-400 transition-colors text-left"
-                  >
-                    Find Lab Near You
-                  </button>
-                </li>
               </ul>
             </div>
 
@@ -165,14 +157,6 @@ export default function Footer() {
                     className="hover:text-blue-400 transition-colors text-left"
                   >
                     Corporate Wellness
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => router.push('/cart')}
-                    className="hover:text-blue-400 transition-colors text-left"
-                  >
-                    Book Tests Online
                   </button>
                 </li>
               </ul>

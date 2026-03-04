@@ -1,16 +1,31 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FiArrowLeft, FiActivity } from 'react-icons/fi';
 import Button from '@/components/ui/Button';
 import TestCard from '@/components/TestCard';
 import SupportModal from '@/components/modals/SupportModal';
-import testsData from '@/lib/data/tests.json';
-import allTestsData from '@/lib/data/all-tests.json';
+import { useTests } from '@/lib/hooks/useTests';
 
 const TESTS_PER_PAGE = 24;
+
+// Health concerns data
+const healthConcerns = [
+  { id: 'c1', name: 'Immunity', color: 'from-red-400 to-orange-400' },
+  { id: 'c2', name: 'Infections', color: 'from-blue-400 to-cyan-400' },
+  { id: 'c3', name: 'Blood Tests', color: 'from-purple-400 to-pink-400' },
+  { id: 'c4', name: 'Kidney', color: 'from-green-400 to-teal-400' },
+  { id: 'c5', name: 'Liver', color: 'from-indigo-400 to-purple-400' },
+  { id: 'c6', name: 'Allergy', color: 'from-rose-400 to-red-400' },
+  { id: 'c7', name: 'Hormones', color: 'from-yellow-400 to-orange-400' },
+  { id: 'c8', name: 'Diabetes', color: 'from-pink-400 to-rose-400' },
+  { id: 'c9', name: 'Heart', color: 'from-cyan-400 to-blue-400' },
+  { id: 'c10', name: 'Thyroid', color: 'from-red-400 to-pink-400' },
+  { id: 'c11', name: 'Fever', color: 'from-purple-400 to-indigo-400' },
+  { id: 'c12', name: 'Vitamin', color: 'from-orange-400 to-red-400' },
+];
 
 // Define filter keywords for each health concern
 const concernFilters: { [key: string]: RegExp } = {
@@ -35,20 +50,23 @@ export default function HealthConcernPage() {
   const [showSupportModal, setShowSupportModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Fetch all tests from database
+  const { tests: allTests, loading } = useTests();
+
   // Find the concern
-  const concern = testsData.healthConcerns.find(c => c.id === concernId);
+  const concern = healthConcerns.find(c => c.id === concernId);
 
   // Filter tests based on concern
   const filteredTests = useMemo(() => {
-    if (!concern) return [];
+    if (!concern || !allTests.length) return [];
     
     const filter = concernFilters[concernId];
     if (!filter) return [];
 
-    return allTestsData.allTests.filter(test => 
+    return allTests.filter(test => 
       filter.test(test.name) || filter.test(test.category)
     );
-  }, [concernId, concern]);
+  }, [concernId, concern, allTests]);
 
   // Pagination
   const totalPages = Math.ceil(filteredTests.length / TESTS_PER_PAGE);
@@ -148,7 +166,12 @@ export default function HealthConcernPage() {
         </motion.div>
 
         {/* Tests Grid */}
-        {filteredTests.length > 0 ? (
+        {loading ? (
+          <div className="text-center py-20">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading tests...</p>
+          </div>
+        ) : filteredTests.length > 0 ? (
           <>
             <div className="mb-8">
               <div className="flex justify-between items-center mb-6">

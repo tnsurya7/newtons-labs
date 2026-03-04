@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import MobileNav from '@/components/MobileNav';
 import TestCard from '@/components/TestCard';
-import allTestsData from '@/lib/data/all-tests.json';
+import { useTests } from '@/lib/hooks/useTests';
 import { FiSearch, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 const TESTS_PER_PAGE = 24;
@@ -16,15 +16,23 @@ export default function AllTestsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState('All');
 
+  // Fetch all tests from database
+  const { tests: allTests, loading } = useTests();
+
   // Get unique categories
-  const categories = ['All', ...Array.from(new Set(allTestsData.allTests.map(test => test.category)))];
+  const categories = useMemo(() => {
+    if (!allTests.length) return ['All'];
+    return ['All', ...Array.from(new Set(allTests.map(test => test.category)))];
+  }, [allTests]);
 
   // Filter tests
-  const filteredTests = allTestsData.allTests.filter((test) => {
-    const matchesSearch = test.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || test.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredTests = useMemo(() => {
+    return allTests.filter((test) => {
+      const matchesSearch = test.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = selectedCategory === 'All' || test.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [allTests, searchQuery, selectedCategory]);
 
   // Pagination
   const totalPages = Math.ceil(filteredTests.length / TESTS_PER_PAGE);
@@ -48,7 +56,7 @@ export default function AllTestsPage() {
               </span>
             </h1>
             <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-8">
-              Browse our complete range of {allTestsData.allTests.length}+ diagnostic tests with up to 91% discount
+              Browse our complete range of {loading ? '...' : `${allTests.length}+`} diagnostic tests with up to 91% discount
             </p>
 
             {/* Search Bar */}
@@ -93,18 +101,25 @@ export default function AllTestsPage() {
           </div>
 
           {/* Tests Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {paginatedTests.map((test, index) => (
-              <motion.div
-                key={test.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.02 }}
-              >
-                <TestCard {...test} />
-              </motion.div>
-            ))}
-          </div>
+          {loading ? (
+            <div className="text-center py-20">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <p className="mt-4 text-gray-600 dark:text-gray-400">Loading tests...</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {paginatedTests.map((test, index) => (
+                <motion.div
+                  key={test.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.02 }}
+                >
+                  <TestCard {...test} />
+                </motion.div>
+              ))}
+            </div>
+          )}
 
           {/* Pagination */}
           {totalPages > 1 && (

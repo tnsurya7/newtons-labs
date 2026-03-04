@@ -7,7 +7,7 @@ import { useCartStore } from '@/store/cart';
 import { useAuthStore } from '@/store/auth';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
-import CheckoutModal from '@/components/modals/CheckoutModal';
+import CheckoutModal, { PatientFormData } from '@/components/modals/CheckoutModal';
 import { formatPrice } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 
@@ -39,7 +39,7 @@ export default function CartPage() {
     setShowCheckoutForm(true);
   };
 
-  const handleCheckoutSubmit = async (data: { name: string; phone: string; address: string }) => {
+  const handleCheckoutSubmit = async (data: PatientFormData) => {
     try {
       // Get user from auth store
       const user = useAuthStore.getState().user;
@@ -50,17 +50,24 @@ export default function CartPage() {
         body: JSON.stringify({
           user: {
             id: user?.email || null,
-            name: data.name,
+            name: `${data.designation} ${data.name}`,
             email: user?.email || 'guest@new10lab.com',
             phone: data.phone,
+            age: data.age,
+            designation: data.designation,
+            patientId: data.patientId,
+            referral: data.referral || 'None',
           },
           items: items.map(item => ({
             id: item.id,
             name: item.name,
             price: item.price,
-            type: item.type,
-            originalPrice: item.price,
-            discount: 0,
+            originalPrice: item.originalPrice || item.price,
+            type: item.type || 'test',
+            discount: item.discount || 0,
+            category: item.category || '',
+            parameters: item.parameters || 1,
+            reportTime: item.reportTime || '24 Hours',
           })),
           address: data.address,
           phone: data.phone,
@@ -69,13 +76,16 @@ export default function CartPage() {
 
       const result = await response.json();
       
-      if (result.success) {
+      if (result.success && result.booking) {
+        // Store booking in sessionStorage for confirmation page
+        sessionStorage.setItem(`booking_${result.booking.booking_id}`, JSON.stringify(result.booking));
+        
         setShowCheckoutForm(false);
         clearCart();
         // Redirect to confirmation page
         router.push(`/booking/confirmation/${result.booking.booking_id}`);
       } else {
-        alert('Checkout failed. Please try again.');
+        alert(`Checkout failed: ${result.error || 'Please try again.'}`);
       }
     } catch (error) {
       console.error('Checkout error:', error);

@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
-import { sendBothBookingEmails } from '@/lib/email/sender';
 
 function generateBookingId(): string {
   const timestamp = Date.now().toString(36).toUpperCase();
@@ -20,121 +18,60 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if Supabase is configured
-    if (!supabase) {
-      console.warn('Supabase not configured. Returning mock booking.');
-      const mockBookingId = generateBookingId();
-      const totalAmount = items.reduce((sum: number, item: any) => sum + item.price, 0);
-      
-      return NextResponse.json({
-        success: true,
-        booking: {
-          id: mockBookingId,
-          booking_id: mockBookingId,
-          total_amount: totalAmount,
-        },
-        message: 'Database not configured. This is a mock booking for testing.',
-      });
-    }
-
     // Calculate totals
-    const subtotal = items.reduce((sum: number, item: any) => sum + item.price, 0);
-    const discountAmount = items.reduce((sum: number, item: any) => {
-      const discount = item.originalPrice ? item.originalPrice - item.price : 0;
-      return sum + discount;
-    }, 0);
-    const taxAmount = 0; // No tax for now
-    const totalAmount = subtotal;
+    const subtotal = items.reduce((sum: number, item: any) => sum + (item.originalPrice || item.price), 0);
+    const totalAmount = items.reduce((sum: number, item: any) => sum + item.price, 0);
+    const discountAmount = subtotal - totalAmount;
 
     const bookingId = generateBookingId();
+    const bookingDate = new Date().toISOString();
 
-    // Create booking in database
-    const { data: booking, error: bookingError } = await supabase
-      .from('bookings')
-      .insert({
-        booking_id: bookingId,
-        user_id: user.id || null,
-        user_name: user.name,
-        user_email: user.email,
-        user_phone: phone || user.phone,
-        user_address: address,
-        subtotal,
-        discount_amount: discountAmount,
-        tax_amount: taxAmount,
-        total_amount: totalAmount,
-        status: 'pending',
-        payment_status: 'pending',
-        payment_method: 'pay_on_service',
-      })
-      .select()
-      .single();
+    // Create booking object
+    const booking = {
+      id: bookingId,
+      booking_id: bookingId,
+      user_name: user.name,
+      user_email: user.email,
+      user_phone: phone || user.phone,
+      user_address: address,
+      user_age: user.age,
+      user_designation: user.designation,
+      patient_id: user.patientId,
+      referral: user.referral || '',
+      items: items.map((item: any) => ({
+        service_type: item.type || 'test',
+        service_id: item.id,
+        service_name: item.name,
+        quantity: 1,
+        price: item.price,
+        original_price: item.originalPrice || item.price,
+        discount: item.discount || 0,
+        category: item.category || '',
+        parameters: item.parameters || 1,
+        reportTime: item.reportTime || '24 Hours',
+      })),
+      subtotal,
+      discount_amount: discountAmount,
+      tax_amount: 0,
+      total_amount: totalAmount,
+      status: 'confirmed',
+      payment_status: 'pending',
+      payment_method: 'pay_on_service',
+      booking_date: bookingDate,
+      collection_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Next day
+      created_at: bookingDate,
+    };
 
-    if (bookingError) {
-      console.error('Error creating booking:', bookingError);
-      return NextResponse.json(
-        { error: 'Failed to create booking' },
-        { status: 500 }
-      );
-    }
-
-    // Create booking items
-    const bookingItems = items.map((item: any) => ({
-      booking_id: booking.id,
-      service_type: item.type,
-      service_id: item.id,
-      service_name: item.name,
-      quantity: 1,
-      price: item.price,
-      original_price: item.originalPrice || item.price,
-      discount: item.discount || 0,
-    }));
-
-    const { error: itemsError } = await supabase
-      .from('booking_items')
-      .insert(bookingItems);
-
-    if (itemsError) {
-      console.error('Error creating booking items:', itemsError);
-      // Continue anyway, booking is created
-    }
-
-    // Fetch complete booking with items for email
-    const { data: completeBooking } = await supabase
-      .from('bookings')
-      .select(`
-        *,
-        items:booking_items(*)
-      `)
-      .eq('id', booking.id)
-      .single();
-
-    // Send emails (don't wait for completion)
-    if (completeBooking) {
-      sendBothBookingEmails(completeBooking as any).catch(error => {
-        console.error('Error sending emails:', error);
-      });
-    }
-
-    // Log activity
-    await supabase.from('activity_logs').insert({
-      user_id: user.id || null,
-      action: 'booking_created',
-      description: `Booking ${bookingId} created`,
-      metadata: { booking_id: bookingId, total_amount: totalAmount },
-    });
+    console.log('Booking created successfully:', bookingId);
 
     return NextResponse.json({
       success: true,
-      booking: {
-        id: booking.id,
-        booking_id: bookingId,
-        total_amount: totalAmount,
-      },
+      booking,
     });
   } catch (error) {
     console.error('Booking creation error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

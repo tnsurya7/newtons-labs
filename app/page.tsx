@@ -11,13 +11,18 @@ import TrustSection from '@/components/TrustSection';
 import Footer from '@/components/Footer';
 import MobileNav from '@/components/MobileNav';
 import Button from '@/components/ui/Button';
-import testsData from '@/lib/data/tests.json';
+import { useTests } from '@/lib/hooks/useTests';
+import { usePackages } from '@/lib/hooks/usePackages';
 import { useAuthStore } from '@/store/auth';
 import { FiUserCheck } from 'react-icons/fi';
 
 export default function Home() {
   const router = useRouter();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  
+  // Fetch data from database
+  const { tests: frequentlyBookedTests, loading: testsLoading } = useTests({ limit: 8 });
+  const { packages: healthPackages, loading: packagesLoading } = usePackages();
 
   const handleConsultationClick = () => {
     if (!isAuthenticated) {
@@ -54,11 +59,18 @@ export default function Home() {
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              {testsData.frequentlyBookedTests.slice(0, 8).map((test) => (
-                <TestCard key={test.id} {...test} />
-              ))}
-            </div>
+            {testsLoading ? (
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <p className="mt-4 text-gray-600 dark:text-gray-400">Loading tests...</p>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                {frequentlyBookedTests.map((test) => (
+                  <TestCard key={test.id} {...test} />
+                ))}
+              </div>
+            )}
 
             {/* View All Button */}
             <div className="text-center">
@@ -93,15 +105,22 @@ export default function Home() {
             </motion.div>
 
             {/* Horizontal Scrollable Container */}
-            <div className="overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4">
-              <div className="flex gap-6 py-2" style={{ minWidth: 'min-content' }}>
-                {testsData.healthPackages.map((pkg) => (
-                  <div key={pkg.id} className="flex-shrink-0 w-[280px] h-[510px]">
-                    <PackageCard {...pkg} />
-                  </div>
-                ))}
+            {packagesLoading ? (
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                <p className="mt-4 text-gray-600 dark:text-gray-400">Loading packages...</p>
               </div>
-            </div>
+            ) : (
+              <div className="overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4">
+                <div className="flex gap-6 py-2" style={{ minWidth: 'min-content' }}>
+                  {healthPackages.map((pkg) => (
+                    <div key={pkg.id} className="flex-shrink-0 w-[280px] h-[510px]">
+                      <PackageCard {...pkg} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </section>
 

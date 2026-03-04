@@ -16,45 +16,23 @@ export default function BookingConfirmationPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchBooking();
-  }, [bookingId]);
-
-  const fetchBooking = async () => {
-    try {
-      // Always try to fetch from database first
-      if (typeof window !== 'undefined') {
-        const { supabase } = await import('@/lib/supabase/client');
-        
-        if (supabase) {
-          const { data, error } = await supabase
-            .from('bookings')
-            .select(`
-              *,
-              items:booking_items(*)
-            `)
-            .eq('booking_id', bookingId)
-            .single();
-
-          if (!error && data) {
-            setBooking(data as any);
-            setLoading(false);
-            return;
-          } else {
-            console.error('Error fetching booking:', error);
-          }
-        }
+    // Try to get booking from sessionStorage first (for immediate redirect after booking)
+    const storedBooking = sessionStorage.getItem(`booking_${bookingId}`);
+    if (storedBooking) {
+      try {
+        const parsedBooking = JSON.parse(storedBooking);
+        setBooking(parsedBooking);
+        setLoading(false);
+        return;
+      } catch (e) {
+        console.error('Error parsing stored booking:', e);
       }
-      
-      // If database fetch fails, show error instead of mock data
-      console.error('Unable to fetch booking from database');
-      setBooking(null);
-    } catch (error) {
-      console.error('Error fetching booking:', error);
-      setBooking(null);
-    } finally {
-      setLoading(false);
     }
-  };
+    
+    // If not in storage, show error
+    setBooking(null);
+    setLoading(false);
+  }, [bookingId]);
 
   const handlePrint = () => {
     window.print();

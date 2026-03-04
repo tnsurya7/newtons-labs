@@ -5,7 +5,12 @@ interface CartItem {
   id: string;
   name: string;
   price: number;
+  originalPrice?: number;
   type: 'test' | 'package';
+  discount?: number;
+  category?: string;
+  parameters?: number;
+  reportTime?: string;
 }
 
 interface CartStore {

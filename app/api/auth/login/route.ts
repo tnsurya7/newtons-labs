@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { validateEmail } from '@/lib/auth/security';
-import { query, queryOne, isDatabaseConfigured } from '@/lib/db/neon';
+import { sql, isDatabaseConfigured } from '@/lib/db/neon';
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,21 +42,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user in database
-    const user = await queryOne<{
-      id: string;
-      name: string;
-      email: string;
-      phone: string;
-      password_hash: string;
-      role: string;
-      status: string;
-      created_at: string;
-    }>(
-      'SELECT id, name, email, phone, password_hash, role, status, created_at FROM users WHERE email = $1',
-      [email.toLowerCase()]
-    );
+    const user = await sql`
+      SELECT id, name, email, phone, password_hash, role, status, created_at 
+      FROM users 
+      WHERE email = ${email.toLowerCase()}
+    `;
 
-    if (!user) {
+    if (!user || user.length === 0) {
       return NextResponse.json(
         {
           success: false,
@@ -67,7 +59,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user is blocked
-    if (user.status === 'blocked') {
+    if (user[0].status === 'blocked') {
       return NextResponse.json(
         {
           success: false,
@@ -78,7 +70,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password
-    const passwordMatch = await bcrypt.compare(password, user.password_hash);
+    const passwordMatch = await bcrypt.compare(password, user[0].password_hash);
 
     if (!passwordMatch) {
       return NextResponse.json(
@@ -91,17 +83,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Log activity
-    await query(
-      'INSERT INTO activity_logs (user_id, action, description) VALUES ($1, $2, $3)',
-      [user.id, 'user_login', `User logged in: ${email}`]
-    );
+    await sql`
+      INSERT INTO activity_logs (user_id, action, description) 
+      VALUES (${user[0].id}, 'user_login', ${`User logged in: ${email}`})
+    `;
 
     // Generate JWT token
     const token = Buffer.from(
       JSON.stringify({
-        userId: user.id,
-        email: user.email,
-        role: user.role,
+        userId: user[0].id,
+        email: user[0].email,
+        role: user[0].role,
         exp: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
       })
     ).toString('base64');
@@ -111,12 +103,12 @@ export async function POST(request: NextRequest) {
       message: 'Login successful',
       data: {
         user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          role: user.role,
-          createdAt: user.created_at,
+          id: user[0].id,
+          name: user[0].name,
+          email: user[0].email,
+          phone: user[0].phone,
+          role: user[0].role,
+          createdAt: user[0].created_at,
         },
         token,
       },

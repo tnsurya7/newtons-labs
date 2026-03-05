@@ -6,7 +6,7 @@ import {
   validatePassword,
   sanitizeInput,
 } from '@/lib/auth/security';
-import { query, queryOne, isDatabaseConfigured } from '@/lib/db/neon';
+import { sql, isDatabaseConfigured } from '@/lib/db/neon';
 
 export async function POST(request: NextRequest) {
   try {
@@ -76,12 +76,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const existingUser = await queryOne(
-      'SELECT email, phone FROM users WHERE email = $1 OR phone = $2 LIMIT 1',
-      [sanitizedEmail, sanitizedPhone]
-    );
+    const existingUser = await sql`
+      SELECT email, phone FROM users 
+      WHERE email = ${sanitizedEmail} OR phone = ${sanitizedPhone}
+      LIMIT 1
+    `;
 
-    if (existingUser) {
+    if (existingUser && existingUser.length > 0) {
       return NextResponse.json(
         {
           success: false,
@@ -95,21 +96,13 @@ export async function POST(request: NextRequest) {
     const passwordHash = await bcrypt.hash(password, 10);
 
     // Create user in database
-    const newUser = await queryOne<{
-      id: string;
-      name: string;
-      email: string;
-      phone: string;
-      role: string;
-      created_at: string;
-    }>(
-      `INSERT INTO users (name, email, phone, password_hash, role, status)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id, name, email, phone, role, created_at`,
-      [sanitizedName, sanitizedEmail, sanitizedPhone, passwordHash, 'user', 'active']
-    );
+    const newUser = await sql`
+      INSERT INTO users (name, email, phone, password_hash, role, status)
+      VALUES (${sanitizedName}, ${sanitizedEmail}, ${sanitizedPhone}, ${passwordHash}, 'user', 'active')
+      RETURNING id, name, email, phone, role, created_at
+    `;
 
-    if (!newUser) {
+    if (!newUser || newUser.length === 0) {
       console.error('Failed to create user');
       return NextResponse.json(
         { success: false, message: 'Failed to create account' },
@@ -118,17 +111,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Log activity
-    await query(
-      `INSERT INTO activity_logs (user_id, action, description)
-       VALUES ($1, $2, $3)`,
-      [newUser.id, 'user_signup', `New user registered: ${sanitizedEmail}`]
-    );
+    await sql`
+      INSERT INTO activity_logs (user_id, action, description)
+      VALUES (${newUser[0].id}, 'user_signup', ${`New user registered: ${sanitizedEmail}`})
+    `;
 
     // Generate JWT token
     const token = Buffer.from(
       JSON.stringify({
-        userId: newUser.id,
-        email: newUser.email,
+        userId: newUser[0].id,
+        email: newUser[0].email,
         exp: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
       })
     ).toString('base64');
@@ -138,12 +130,12 @@ export async function POST(request: NextRequest) {
       message: 'Account created successfully',
       data: {
         user: {
-          id: newUser.id,
-          name: newUser.name,
-          email: newUser.email,
-          phone: newUser.phone,
-          role: newUser.role,
-          createdAt: newUser.created_at,
+          id: newUser[0].id,
+          name: newUser[0].name,
+          email: newUser[0].email,
+          phone: newUser[0].phone,
+          role: newUser[0].role,
+          createdAt: newUser[0].created_at,
         },
         token,
       },

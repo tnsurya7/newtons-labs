@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server';
-import { query } from '@/lib/db/neon';
+import { sql } from '@/lib/db/neon';
 
 export async function GET() {
   try {
     // Get all tests grouped by category
-    const data = await query(
-      "SELECT category FROM tests WHERE status = $1",
-      ['active']
-    );
+    const data = await sql`
+      SELECT category FROM tests WHERE status = 'active'
+    `;
     
     // Count tests by category
     const categoryCount: Record<string, number> = {};

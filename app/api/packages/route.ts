@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
-import { query } from '@/lib/db/neon';
+import { sql } from '@/lib/db/neon';
 
 export async function GET() {
   try {
-    const data = await query(
-      "SELECT * FROM packages WHERE status = $1 ORDER BY price",
-      ['active']
-    );
+    const data = await sql`
+      SELECT * FROM packages WHERE status = 'active' ORDER BY price
+    `;
     
     // Transform data to match frontend expectations
     const packages = data.map((pkg: any) => ({

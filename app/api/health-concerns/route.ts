@@ -1,21 +1,13 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { query } from '@/lib/db/neon';
 
 export async function GET() {
   try {
     // Get all tests grouped by category
-    const { data, error } = await supabase
-      .from('tests')
-      .select('category')
-      .eq('status', 'active');
-    
-    if (error) {
-      console.error('Error fetching health concerns:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch health concerns' },
-        { status: 500 }
-      );
-    }
+    const data = await query(
+      "SELECT category FROM tests WHERE status = $1",
+      ['active']
+    );
     
     // Count tests by category
     const categoryCount: Record<string, number> = {};

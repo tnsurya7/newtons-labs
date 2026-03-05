@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcryptjs';
 import {
   validateEmail,
@@ -7,14 +6,12 @@ import {
   validatePassword,
   sanitizeInput,
 } from '@/lib/auth/security';
+import { query, queryOne, isDatabaseConfigured } from '@/lib/db/neon';
 
 export async function POST(request: NextRequest) {
   try {
-    // Initialize Supabase client inside the function
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !supabaseKey) {
+    // Check if database is configured
+    if (!isDatabaseConfigured()) {
       return NextResponse.json(
         {
           success: false,
@@ -23,8 +20,6 @@ export async function POST(request: NextRequest) {
         { status: 503 }
       );
     }
-
-    const supabase = createClient(supabaseUrl, supabaseKey);
 
     const body = await request.json();
     const { name, email, phone, password } = body;
@@ -81,11 +76,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const { data: existingUser } = await supabase
-      .from('users')
-      .select('email, phone')
-      .or(`email.eq.${sanitizedEmail},phone.eq.${sanitizedPhone}`)
-      .single();
+    const existingUser = await queryOne(
+      'SELECT email, phone FROM users WHERE email = $1 OR phone = $2 LIMIT 1',
+      [sanitizedEmail, sanitizedPhone]
+    );
 
     if (existingUser) {
       return NextResponse.json(
@@ -101,23 +95,22 @@ export async function POST(request: NextRequest) {
     const passwordHash = await bcrypt.hash(password, 10);
 
     // Create user in database
-    const { data: newUser, error } = await supabase
-      .from('users')
-      .insert([
-        {
-          name: sanitizedName,
-          email: sanitizedEmail,
-          phone: sanitizedPhone,
-          password_hash: passwordHash,
-          role: 'user',
-          status: 'active',
-        },
-      ])
-      .select('id, name, email, phone, role, created_at')
-      .single();
+    const newUser = await queryOne<{
+      id: string;
+      name: string;
+      email: string;
+      phone: string;
+      role: string;
+      created_at: string;
+    }>(
+      `INSERT INTO users (name, email, phone, password_hash, role, status)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id, name, email, phone, role, created_at`,
+      [sanitizedName, sanitizedEmail, sanitizedPhone, passwordHash, 'user', 'active']
+    );
 
-    if (error) {
-      console.error('Database error:', error);
+    if (!newUser) {
+      console.error('Failed to create user');
       return NextResponse.json(
         { success: false, message: 'Failed to create account' },
         { status: 500 }
@@ -125,13 +118,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Log activity
-    await supabase.from('activity_logs').insert([
-      {
-        user_id: newUser.id,
-        action: 'user_signup',
-        description: `New user registered: ${sanitizedEmail}`,
-      },
-    ]);
+    await query(
+      `INSERT INTO activity_logs (user_id, action, description)
+       VALUES ($1, $2, $3)`,
+      [newUser.id, 'user_signup', `New user registered: ${sanitizedEmail}`]
+    );
 
     // Generate JWT token
     const token = Buffer.from(

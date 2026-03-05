@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { query } from '@/lib/db/neon';
 
 export async function GET(request: Request) {
   try {
@@ -8,38 +8,35 @@ export async function GET(request: Request) {
     const search = searchParams.get('search');
     const limit = searchParams.get('limit');
     
-    let query = supabase
-      .from('tests')
-      .select('*')
-      .eq('status', 'active');
+    // Build SQL query
+    let sqlQuery = 'SELECT * FROM tests WHERE status = $1';
+    const params: any[] = ['active'];
+    let paramIndex = 2;
     
     // Filter by category if provided
     if (category && category !== 'all') {
-      query = query.eq('category', category);
+      sqlQuery += ` AND category = $${paramIndex}`;
+      params.push(category);
+      paramIndex++;
     }
     
     // Search by name if provided
     if (search) {
-      query = query.ilike('name', `%${search}%`);
-    }
-    
-    // Limit results if provided
-    if (limit) {
-      query = query.limit(parseInt(limit));
+      sqlQuery += ` AND name ILIKE $${paramIndex}`;
+      params.push(`%${search}%`);
+      paramIndex++;
     }
     
     // Order by name
-    query = query.order('name');
+    sqlQuery += ' ORDER BY name';
     
-    const { data, error } = await query;
-    
-    if (error) {
-      console.error('Error fetching tests:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch tests' },
-        { status: 500 }
-      );
+    // Limit results if provided
+    if (limit) {
+      sqlQuery += ` LIMIT $${paramIndex}`;
+      params.push(parseInt(limit));
     }
+    
+    const data = await query(sqlQuery, params);
     
     // Transform data to match frontend expectations
     const tests = data.map((test: any) => ({

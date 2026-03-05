@@ -1,21 +1,12 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { query } from '@/lib/db/neon';
 
 export async function GET() {
   try {
-    const { data, error } = await supabase
-      .from('packages')
-      .select('*')
-      .eq('status', 'active')
-      .order('price');
-    
-    if (error) {
-      console.error('Error fetching packages:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch packages' },
-        { status: 500 }
-      );
-    }
+    const data = await query(
+      "SELECT * FROM packages WHERE status = $1 ORDER BY price",
+      ['active']
+    );
     
     // Transform data to match frontend expectations
     const packages = data.map((pkg: any) => ({

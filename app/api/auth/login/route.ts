@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcryptjs';
 import { validateEmail } from '@/lib/auth/security';
+import { query, queryOne, isDatabaseConfigured } from '@/lib/db/neon';
 
 export async function POST(request: NextRequest) {
   try {
-    // Initialize Supabase client inside the function
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !supabaseKey) {
+    // Check if database is configured
+    if (!isDatabaseConfigured()) {
       return NextResponse.json(
         {
           success: false,
@@ -18,8 +15,6 @@ export async function POST(request: NextRequest) {
         { status: 503 }
       );
     }
-
-    const supabase = createClient(supabaseUrl, supabaseKey);
 
     const body = await request.json();
     const { email, password } = body;
@@ -47,13 +42,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user in database
-    const { data: user, error } = await supabase
-      .from('users')
-      .select('id, name, email, phone, password_hash, role, status, created_at')
-      .eq('email', email.toLowerCase())
-      .single();
+    const user = await queryOne<{
+      id: string;
+      name: string;
+      email: string;
+      phone: string;
+      password_hash: string;
+      role: string;
+      status: string;
+      created_at: string;
+    }>(
+      'SELECT id, name, email, phone, password_hash, role, status, created_at FROM users WHERE email = $1',
+      [email.toLowerCase()]
+    );
 
-    if (error || !user) {
+    if (!user) {
       return NextResponse.json(
         {
           success: false,
@@ -88,13 +91,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Log activity
-    await supabase.from('activity_logs').insert([
-      {
-        user_id: user.id,
-        action: 'user_login',
-        description: `User logged in: ${email}`,
-      },
-    ]);
+    await query(
+      'INSERT INTO activity_logs (user_id, action, description) VALUES ($1, $2, $3)',
+      [user.id, 'user_login', `User logged in: ${email}`]
+    );
 
     // Generate JWT token
     const token = Buffer.from(

@@ -10,7 +10,7 @@ export async function GET() {
     
     // Count tests by category
     const categoryCount: Record<string, number> = {};
-    data.forEach((test: { category: string | null }) => {
+    data.forEach((test: any) => {
       if (test.category && test.category !== 'PACKAGES') {
         categoryCount[test.category] = (categoryCount[test.category] || 0) + 1;
       }

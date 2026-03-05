@@ -1,6 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 
-// Get database URL from environment
+// Get database URL from environment variable
 const getDatabaseUrl = () => {
   const url = process.env.DATABASE_URL;
   if (!url) {
@@ -9,7 +9,7 @@ const getDatabaseUrl = () => {
   return url;
 };
 
-// Create SQL query function
+// Create SQL query function using Neon serverless driver
 export const sql = neon(getDatabaseUrl());
 
 // Helper function to check if database is configured

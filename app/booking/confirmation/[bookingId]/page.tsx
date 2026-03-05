@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { FiCheckCircle, FiDownload, FiPrinter, FiHome, FiMail } from 'react-icons/fi';
+import { FiCheckCircle, FiDownload, FiPrinter, FiHome } from 'react-icons/fi';
 import Button from '@/components/ui/Button';
 import { BookingWithItems } from '@/lib/supabase/types';
 
@@ -125,21 +125,43 @@ export default function BookingConfirmationPage() {
           </div>
         </motion.div>
 
-        {/* Email Confirmation Notice */}
+        {/* Contact for Confirmation Notice */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-2xl p-4 mb-6 flex items-start gap-3"
+          className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-2xl p-4 mb-6"
         >
-          <FiMail className="text-blue-600 flex-shrink-0 mt-1" size={20} />
-          <div>
-            <p className="font-semibold text-gray-900 dark:text-white mb-1">
-              Confirmation Email Sent
-            </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              We've sent a detailed confirmation to <strong>{booking.user_email}</strong>
-            </p>
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-2xl">📞</span>
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-gray-900 dark:text-white mb-2">
+                Please Contact Us for Confirmation
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                To confirm your booking and finalize the details, please contact our team:
+              </p>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-3">
+                <div className="flex items-center gap-4 flex-wrap">
+                  <a 
+                    href="tel:9003130800" 
+                    className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold"
+                  >
+                    <span className="text-xl">📞</span>
+                    <span>9003130800</span>
+                  </a>
+                  <a 
+                    href="mailto:support@new10lab.com" 
+                    className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold"
+                  >
+                    <span className="text-xl">✉️</span>
+                    <span>support@new10lab.com</span>
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </motion.div>
 

@@ -1,22 +1,23 @@
 import { NextResponse } from 'next/server';
-import { sql } from '@/lib/db/neon';
+import { HARDCODED_PACKAGES } from '@/lib/data/hardcoded-packages';
 
 export async function GET() {
   try {
-    const data = await sql`
-      SELECT * FROM packages WHERE status = 'active' ORDER BY price
-    `;
-    
     // Transform data to match frontend expectations
-    const packages = data.map((pkg: any) => ({
+    const packages = HARDCODED_PACKAGES.map((pkg) => ({
       id: pkg.id,
       name: pkg.name,
+      description: pkg.description,
       price: pkg.price,
-      originalPrice: pkg.original_price,
-      discount: pkg.discount,
-      tests: pkg.tests_count,
+      originalPrice: pkg.mrp,
+      discount: 0,
+      testsIncluded: pkg.tests_included,
+      features: pkg.features,
       popular: pkg.popular,
-      features: pkg.features || []
+      reportTime: pkg.tat,
+      sampleType: pkg.sample_type,
+      fasting: pkg.fasting_required,
+      category: pkg.category
     }));
     
     return NextResponse.json({ packages });

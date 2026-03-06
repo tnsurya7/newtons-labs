@@ -1,16 +1,11 @@
 import { NextResponse } from 'next/server';
-import { sql } from '@/lib/db/neon';
+import { HARDCODED_TESTS } from '@/lib/data/hardcoded-tests';
 
 export async function GET() {
   try {
-    // Get all tests grouped by category
-    const data = await sql`
-      SELECT category FROM tests WHERE status = 'active'
-    `;
-    
-    // Count tests by category
+    // Count tests by category from hardcoded data
     const categoryCount: Record<string, number> = {};
-    data.forEach((test: any) => {
+    HARDCODED_TESTS.forEach((test) => {
       if (test.category && test.category !== 'PACKAGES') {
         categoryCount[test.category] = (categoryCount[test.category] || 0) + 1;
       }
@@ -19,8 +14,11 @@ export async function GET() {
     // Map categories to health concerns with friendly names
     const categoryMap: Record<string, string> = {
       'IMMUNOLOGY': 'Immunity',
+      'IMMUNOLOGY / SEROLOGY': 'Immunity',
       'CLINICAL MICROBIOLOGY': 'Infections',
+      'MICROBIOLOGY': 'Infections',
       'PATHOLOGY': 'Blood Tests',
+      'HAEMATOLOGY': 'Blood Tests',
       'CLINICAL PATHOLOGY': 'Kidney',
       'CLINICAL BIOCHEMISTRY': 'General Health',
       'MOLECULAR BIOLOGY': 'Genetic Tests',

@@ -1,8 +1,0 @@
-Paste all your 515 tests here in this format (one per line):
-TestName|Price|SampleType|TAT|Category
-
-Example:
-Dual Marker With Graph|1600||2 Days 0 hr 0 min|CLINICAL BIOCHEMISTRY
-Quad Marker With Graph|2000||2 Days 0 hr 0 min|CLINICAL BIOCHEMISTRY
-
-Replace this text with your complete data from the image/source.

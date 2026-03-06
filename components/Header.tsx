@@ -3,10 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { FiSearch, FiPhone, FiHome, FiUser, FiShoppingCart, FiMenu, FiX, FiMapPin, FiMoon, FiSun, FiLogOut, FiGift } from 'react-icons/fi';
+import { FiSearch, FiPhone, FiHome, FiShoppingCart, FiMenu, FiX, FiMapPin, FiMoon, FiSun, FiGift } from 'react-icons/fi';
 import { useCartStore } from '@/store/cart';
 import { useThemeStore } from '@/store/theme';
-import { useAuthStore } from '@/store/auth';
 import { useLocationStore } from '@/store/location';
 import LocationModal from './modals/LocationModal';
 import SupportModal from './modals/SupportModal';
@@ -24,7 +23,6 @@ interface SearchResult {
 export default function Header() {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showUserMenu, setShowUserMenu] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showSupportModal, setShowSupportModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -34,17 +32,9 @@ export default function Header() {
   
   const totalItems = useCartStore((state) => state.totalItems);
   const { isDark, toggleTheme } = useThemeStore();
-  const { user, isAuthenticated, logout } = useAuthStore();
   const { city, pincode, setLocation } = useLocationStore();
 
   const handleHomeVisitClick = () => {
-    if (!isAuthenticated) {
-      const shouldLogin = confirm('Login Required\n\nPlease login to book home visit services.\n\nClick OK to go to login page.');
-      if (shouldLogin) {
-        router.push('/login');
-      }
-      return;
-    }
     router.push('/home-visit');
   };
 
@@ -60,7 +50,7 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Search functionality
+  // Search functionality - INSTANT (no debounce)
   useEffect(() => {
     if (searchQuery.trim() === '') {
       setSearchResults([]);
@@ -71,8 +61,8 @@ export default function Header() {
     // Show results immediately on any input
     setShowSearchResults(true);
 
-    // Debounce search
-    const timeoutId = setTimeout(async () => {
+    // Instant search - no debounce
+    const performSearch = async () => {
       try {
         const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`);
         const data = await response.json();
@@ -81,9 +71,9 @@ export default function Header() {
         console.error('Search error:', error);
         setSearchResults([]);
       }
-    }, 300);
+    };
 
-    return () => clearTimeout(timeoutId);
+    performSearch();
   }, [searchQuery]);
 
   const handleSearchResultClick = (result: SearchResult) => {
@@ -267,59 +257,7 @@ export default function Header() {
                 <span className="text-sm font-medium">Home Visit</span>
               </button>
 
-              {isAuthenticated && user ? (
-                <div className="relative">
-                  <button
-                    onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                    title="User Profile"
-                  >
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-teal-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                      {user.name.charAt(0).toUpperCase()}
-                    </div>
-                    <span className="hidden md:block text-sm font-medium">{user.name.split(' ')[0]}</span>
-                  </button>
 
-                  {showUserMenu && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 z-50"
-                    >
-                      <div className="border-b border-gray-200 dark:border-gray-700 pb-3 mb-3">
-                        <p className="font-semibold text-gray-900 dark:text-white">{user.name}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{user.email}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{user.phone}</p>
-                      </div>
-                      <button
-                        onClick={async () => {
-                          try {
-                            await fetch('/api/auth/logout', { method: 'POST' });
-                            logout();
-                            setShowUserMenu(false);
-                            router.push('/');
-                          } catch (error) {
-                            console.error('Logout error:', error);
-                          }
-                        }}
-                        className="w-full flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors"
-                      >
-                        <FiLogOut size={18} />
-                        <span>Logout</span>
-                      </button>
-                    </motion.div>
-                  )}
-                </div>
-              ) : (
-                <button
-                  onClick={() => router.push('/login')}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                  title="Login"
-                >
-                  <FiUser size={20} />
-                  <span className="hidden md:block text-sm font-medium">Login</span>
-                </button>
-              )}
 
               <button
                 onClick={() => router.push('/cart')}

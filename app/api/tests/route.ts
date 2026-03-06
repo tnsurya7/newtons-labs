@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { sql } from '@/lib/db/neon';
+import { HARDCODED_TESTS } from '@/lib/data/hardcoded-tests';
 
 export async function GET(request: Request) {
   try {
@@ -8,68 +8,46 @@ export async function GET(request: Request) {
     const search = searchParams.get('search');
     const limit = searchParams.get('limit');
     
-    // Build SQL query dynamically
-    let data;
+    let tests = [...HARDCODED_TESTS];
     
-    if (category && category !== 'all' && search) {
-      // Both category and search
-      data = await sql`
-        SELECT * FROM tests 
-        WHERE status = 'active' 
-        AND category = ${category}
-        AND name ILIKE ${'%' + search + '%'}
-        ORDER BY name
-        ${limit ? sql`LIMIT ${parseInt(limit)}` : sql``}
-      `;
-    } else if (category && category !== 'all') {
-      // Only category
-      data = await sql`
-        SELECT * FROM tests 
-        WHERE status = 'active' 
-        AND category = ${category}
-        ORDER BY name
-        ${limit ? sql`LIMIT ${parseInt(limit)}` : sql``}
-      `;
-    } else if (search) {
-      // Only search
-      data = await sql`
-        SELECT * FROM tests 
-        WHERE status = 'active' 
-        AND name ILIKE ${'%' + search + '%'}
-        ORDER BY name
-        ${limit ? sql`LIMIT ${parseInt(limit)}` : sql``}
-      `;
-    } else if (limit) {
-      // Only limit
-      data = await sql`
-        SELECT * FROM tests 
-        WHERE status = 'active' 
-        ORDER BY name
-        LIMIT ${parseInt(limit)}
-      `;
-    } else {
-      // No filters
-      data = await sql`
-        SELECT * FROM tests 
-        WHERE status = 'active' 
-        ORDER BY name
-      `;
+    // Filter by category if provided
+    if (category && category !== 'all') {
+      tests = tests.filter(test => 
+        test.category?.toLowerCase() === category.toLowerCase()
+      );
+    }
+    
+    // Filter by search query if provided
+    if (search) {
+      const searchLower = search.toLowerCase();
+      tests = tests.filter(test =>
+        test.name.toLowerCase().includes(searchLower) ||
+        test.department?.toLowerCase().includes(searchLower) ||
+        test.category?.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    // Apply limit if provided
+    if (limit) {
+      tests = tests.slice(0, parseInt(limit));
     }
     
     // Transform data to match frontend expectations
-    const tests = data.map((test: any) => ({
+    const transformedTests = tests.map((test) => ({
       id: test.id,
       name: test.name,
       price: test.price,
-      originalPrice: test.original_price,
-      discount: test.discount,
-      parameters: test.parameters,
-      reportTime: test.report_time,
+      originalPrice: test.mrp,
+      discount: 0,
+      parameters: test.sample_type || '',
+      reportTime: test.tat,
       fasting: test.fasting_required,
-      category: test.category
+      category: test.category,
+      sampleType: test.sample_type,
+      department: test.department
     }));
     
-    return NextResponse.json({ tests });
+    return NextResponse.json({ tests: transformedTests });
   } catch (error) {
     console.error('Error in tests API:', error);
     return NextResponse.json(

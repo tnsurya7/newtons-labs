@@ -1,81 +1,54 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { NextResponse } from 'next/server';
+import { HARDCODED_TESTS } from '@/lib/data/hardcoded-tests';
+import { HARDCODED_PACKAGES } from '@/lib/data/hardcoded-packages';
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const query = searchParams.get('q')?.toLowerCase() || '';
+    const { searchParams } = new URL(request.url);
+    const query = searchParams.get('q') || '';
     
-    if (!query) {
+    if (!query || query.length < 2) {
       return NextResponse.json({ results: [] });
     }
-
-    const results: any[] = [];
-
-    // Search tests from database
-    const { data: tests, error: testsError } = await supabase
-      .from('tests')
-      .select('*')
-      .eq('status', 'active')
-      .or(`name.ilike.%${query}%,category.ilike.%${query}%`)
-      .limit(20);
-
-    if (!testsError && tests) {
-      tests.forEach((test: any) => {
-        results.push({
-          id: test.id,
-          name: test.name,
-          type: 'test',
-          price: test.price,
-          originalPrice: test.original_price,
-          discount: test.discount,
-          details: `${test.parameters} parameters • ${test.report_time}`,
-          category: test.category,
-        });
-      });
-    }
-
-    // Search packages from database
-    const { data: packages, error: packagesError} = await supabase
-      .from('packages')
-      .select('*')
-      .eq('status', 'active')
-      .ilike('name', `%${query}%`)
-      .limit(10);
-
-    if (!packagesError && packages) {
-      packages.forEach((pkg: any) => {
-        results.push({
-          id: pkg.id,
-          name: pkg.name,
-          type: 'package',
-          price: pkg.price,
-          originalPrice: pkg.original_price,
-          discount: pkg.discount,
-          details: `${pkg.tests_count} tests included`,
-          popular: pkg.popular,
-        });
-      });
-    }
-
-    // Sort by relevance (exact matches first, then by name)
-    results.sort((a, b) => {
-      const aExact = a.name.toLowerCase().startsWith(query);
-      const bExact = b.name.toLowerCase().startsWith(query);
-      if (aExact && !bExact) return -1;
-      if (!aExact && bExact) return 1;
-      return a.name.localeCompare(b.name);
-    });
-
-    // Limit to 10 results
-    const limitedResults = results.slice(0, 10);
-
-    return NextResponse.json({ 
-      results: limitedResults,
-      total: results.length 
-    });
+    
+    const searchLower = query.toLowerCase();
+    
+    // Search in tests
+    const testResults = HARDCODED_TESTS
+      .filter(test =>
+        test.name.toLowerCase().includes(searchLower) ||
+        test.department?.toLowerCase().includes(searchLower) ||
+        test.category?.toLowerCase().includes(searchLower)
+      )
+      .slice(0, 10)
+      .map(test => ({
+        id: test.id,
+        name: test.name,
+        type: 'test',
+        price: test.price,
+        category: test.category
+      }));
+    
+    // Search in packages
+    const packageResults = HARDCODED_PACKAGES
+      .filter(pkg =>
+        pkg.name.toLowerCase().includes(searchLower) ||
+        pkg.description?.toLowerCase().includes(searchLower)
+      )
+      .slice(0, 5)
+      .map(pkg => ({
+        id: pkg.id,
+        name: pkg.name,
+        type: 'package',
+        price: pkg.price,
+        category: pkg.category
+      }));
+    
+    const results = [...testResults, ...packageResults];
+    
+    return NextResponse.json({ results });
   } catch (error) {
-    console.error('Search error:', error);
+    console.error('Error in search API:', error);
     return NextResponse.json(
       { error: 'Search failed' },
       { status: 500 }

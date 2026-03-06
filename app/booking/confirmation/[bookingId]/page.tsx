@@ -221,8 +221,8 @@ export default function BookingConfirmationPage() {
                 </tr>
               </thead>
               <tbody>
-                {booking.items.map((item) => (
-                  <tr key={item.id} className="border-b border-gray-100 dark:border-gray-700">
+                {booking.items.map((item, index) => (
+                  <tr key={item.id || `item-${index}`} className="border-b border-gray-100 dark:border-gray-700">
                     <td className="py-3 text-gray-900 dark:text-white">
                       {item.service_name}
                       <br />

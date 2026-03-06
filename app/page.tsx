@@ -104,20 +104,58 @@ export default function Home() {
               </p>
             </motion.div>
 
-            {/* Horizontal Scrollable Container */}
+            {/* Horizontal Scrollable Container with Arrows */}
             {packagesLoading ? (
               <div className="text-center py-12">
                 <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
                 <p className="mt-4 text-gray-600 dark:text-gray-400">Loading packages...</p>
               </div>
             ) : (
-              <div className="overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4">
-                <div className="flex gap-6 py-2" style={{ minWidth: 'min-content' }}>
-                  {healthPackages.map((pkg) => (
-                    <div key={pkg.id} className="flex-shrink-0 w-[280px] h-[510px]">
-                      <PackageCard {...pkg} />
-                    </div>
-                  ))}
+              <div className="relative">
+                {/* Left Arrow */}
+                <button
+                  onClick={() => {
+                    const container = document.getElementById('packages-scroll-container');
+                    if (container) {
+                      container.scrollBy({ left: -300, behavior: 'smooth' });
+                    }
+                  }}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 shadow-xl rounded-full p-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all hover:scale-110 border-2 border-gray-200 dark:border-gray-700"
+                  aria-label="Scroll left"
+                >
+                  <svg className="w-6 h-6 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+
+                {/* Right Arrow */}
+                <button
+                  onClick={() => {
+                    const container = document.getElementById('packages-scroll-container');
+                    if (container) {
+                      container.scrollBy({ left: 300, behavior: 'smooth' });
+                    }
+                  }}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 shadow-xl rounded-full p-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all hover:scale-110 border-2 border-gray-200 dark:border-gray-700"
+                  aria-label="Scroll right"
+                >
+                  <svg className="w-6 h-6 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+
+                {/* Scrollable Container */}
+                <div 
+                  id="packages-scroll-container"
+                  className="overflow-x-auto pb-4 scrollbar-hide px-12"
+                >
+                  <div className="flex gap-6 py-2" style={{ minWidth: 'min-content' }}>
+                    {healthPackages.map((pkg) => (
+                      <div key={pkg.id} className="flex-shrink-0 w-[280px] h-[510px]">
+                        <PackageCard {...pkg} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}

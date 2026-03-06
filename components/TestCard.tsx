@@ -8,10 +8,8 @@ import Card from './ui/Card';
 import Button from './ui/Button';
 import Badge from './ui/Badge';
 import Toast from './ui/Toast';
-import LoginRequiredModal from './modals/LoginRequiredModal';
 import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/store/cart';
-import { useAuthStore } from '@/store/auth';
 
 interface TestCardProps {
   id: string;
@@ -36,9 +34,7 @@ export default function TestCard({
 }: TestCardProps) {
   const router = useRouter();
   const addItem = useCartStore((state) => state.addItem);
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [showToast, setShowToast] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // Swap display: Show MRP as main price, calculate higher "original" price
   const sellingPrice = originalPrice; // MRP from data (1600) - this is what user pays
@@ -46,12 +42,6 @@ export default function TestCard({
   const discountPercentage = Math.round(((displayOriginalPrice - sellingPrice) / displayOriginalPrice) * 100);
 
   const handleAddToCart = async () => {
-    // Check if user is authenticated
-    if (!isAuthenticated) {
-      setShowLoginModal(true);
-      return;
-    }
-
     try {
       // Call API to add to cart
       const response = await fetch('/api/cart/add', {
@@ -155,14 +145,6 @@ export default function TestCard({
           description={`${parameters} Parameters • ${reportTime}`}
           price={sellingPrice}
           type="success"
-        />
-
-        {/* Login Required Modal */}
-        <LoginRequiredModal
-          isOpen={showLoginModal}
-          onClose={() => setShowLoginModal(false)}
-          message="Please login to book tests and add items to your cart"
-          feature="book tests"
         />
       </Card>
     </motion.div>

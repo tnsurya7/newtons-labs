@@ -4,12 +4,10 @@ import { FiHome, FiActivity, FiMapPin, FiUser, FiShoppingCart } from 'react-icon
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/cart';
-import { useAuthStore } from '@/store/auth';
 
 export default function MobileNav() {
   const router = useRouter();
   const totalItems = useCartStore((state) => state.totalItems);
-  const { isAuthenticated } = useAuthStore();
 
   const navItems = [
     { icon: FiHome, label: 'Home', action: () => router.push('/') },
@@ -45,11 +43,7 @@ export default function MobileNav() {
       icon: FiUser, 
       label: 'Profile', 
       action: () => {
-        if (isAuthenticated) {
-          router.push('/profile');
-        } else {
-          router.push('/login');
-        }
+        alert('Profile feature coming soon!');
       }
     },
   ];

@@ -4,32 +4,17 @@ import { motion } from 'framer-motion';
 import { FiTrash2, FiShoppingCart, FiArrowLeft, FiCheck } from 'react-icons/fi';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/cart';
-import { useAuthStore } from '@/store/auth';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import CheckoutModal, { PatientFormData } from '@/components/modals/CheckoutModal';
 import { formatPrice } from '@/lib/utils';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export default function CartPage() {
   const router = useRouter();
   const { items, removeItem, clearCart, totalItems } = useCartStore();
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  // Prevent hydration mismatch
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (mounted && !isAuthenticated) {
-      router.push('/login');
-    }
-  }, [mounted, isAuthenticated, router]);
 
   const subtotal = items.reduce((sum, item) => sum + item.price, 0);
   const total = subtotal; // No discount applied
@@ -40,17 +25,14 @@ export default function CartPage() {
 
   const handleCheckoutSubmit = async (data: PatientFormData) => {
     try {
-      // Get user from auth store
-      const user = useAuthStore.getState().user;
-      
       const response = await fetch('/api/bookings/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user: {
-            id: user?.email || null,
+            id: null,
             name: `${data.designation} ${data.name}`,
-            email: user?.email || 'guest@new10lab.com',
+            email: 'guest@new10lab.com',
             phone: data.phone,
             age: data.age,
             designation: data.designation,
@@ -115,10 +97,6 @@ export default function CartPage() {
         </motion.div>
       </div>
     );
-  }
-
-  if (!mounted) {
-    return null; // Prevent hydration mismatch
   }
 
   return (

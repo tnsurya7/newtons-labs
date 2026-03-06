@@ -5,9 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { FiThermometer, FiDroplet, FiFilter, FiHeart, FiZap, FiSun, FiAlertCircle, FiActivity, FiX, FiShoppingCart, FiClock } from 'react-icons/fi';
 import Toast from './ui/Toast';
-import LoginRequiredModal from './modals/LoginRequiredModal';
 import { useCartStore } from '@/store/cart';
-import { useAuthStore } from '@/store/auth';
 
 const colorMap: { [key: string]: string } = {
   'IMMUNOLOGY / SEROLOGY': 'bg-gradient-to-br from-blue-500 to-blue-600',
@@ -51,10 +49,8 @@ export default function HealthConcerns() {
   const [loadingTests, setLoadingTests] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastData, setToastData] = useState<any>(null);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   
   const addItem = useCartStore((state) => state.addItem);
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   useEffect(() => {
     async function fetchHealthConcerns() {
@@ -98,12 +94,6 @@ export default function HealthConcerns() {
   };
 
   const handleAddToCart = async (test: any) => {
-    // Check if user is authenticated
-    if (!isAuthenticated) {
-      setShowLoginModal(true);
-      return;
-    }
-
     try {
       // Calculate pricing
       const sellingPrice = test.price;
@@ -381,14 +371,6 @@ export default function HealthConcerns() {
           type="success"
         />
       )}
-
-      {/* Login Required Modal */}
-      <LoginRequiredModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        message="Please login to book tests and add items to your cart"
-        feature="book tests"
-      />
     </>
   );
 }

@@ -7,10 +7,8 @@ import Card from './ui/Card';
 import Button from './ui/Button';
 import Badge from './ui/Badge';
 import Toast from './ui/Toast';
-import LoginRequiredModal from './modals/LoginRequiredModal';
 import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/store/cart';
-import { useAuthStore } from '@/store/auth';
 
 interface PackageCardProps {
   id: string;
@@ -33,9 +31,7 @@ export default function PackageCard({
   features,
 }: PackageCardProps) {
   const addItem = useCartStore((state) => state.addItem);
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [showToast, setShowToast] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [showTestsModal, setShowTestsModal] = useState(false);
 
   // Parse features if it's a JSON string from database
@@ -47,11 +43,6 @@ export default function PackageCard({
   const discountPercentage = Math.round(((displayOriginalPrice - sellingPrice) / displayOriginalPrice) * 100);
 
   const handleAddToCart = async () => {
-    if (!isAuthenticated) {
-      setShowLoginModal(true);
-      return;
-    }
-
     try {
       const response = await fetch('/api/cart/add', {
         method: 'POST',
@@ -187,12 +178,6 @@ export default function PackageCard({
           />
 
           {/* Login Required Modal */}
-          <LoginRequiredModal
-            isOpen={showLoginModal}
-            onClose={() => setShowLoginModal(false)}
-            message="Please login to book packages and add items to your cart"
-            feature="book packages"
-          />
         </Card>
       </motion.div>
 

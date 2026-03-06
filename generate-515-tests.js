@@ -1,15 +1,6 @@
 const fs = require('fs');
 
 // Generate 515 tests across different departments
-const departments = {
-  'CLINICAL BIOCHEMISTRY': 200,
-  'HAEMATOLOGY': 80,
-  'IMMUNOLOGY / SEROLOGY': 100,
-  'CLINICAL PATHOLOGY': 50,
-  'MICROBIOLOGY': 50,
-  'MOLECULAR BIOLOGY': 35
-};
-
 const tests = [];
 let id = 1;
 
@@ -37,7 +28,6 @@ const biochemTests = [
   { name: 'Liver Function Test', price: 700, sample: 'SERUM', tat: '1 Days', fasting: true }
 ];
 
-// Add more variations
 for (let i = 0; i < 200; i++) {
   const baseTest = biochemTests[i % biochemTests.length];
   tests.push({
@@ -187,11 +177,19 @@ for (let i = 0; i < 35; i++) {
   });
 }
 
-// Generate TypeScript file
-const tsContent = `// Hardcoded tests data - 515 comprehensive tests
-export const HARDCODED_TESTS = ${JSON.stringify(tests, null, 2)};
+// Generate TypeScript file with proper syntax
+let tsContent = '// Hardcoded tests data - 515 comprehensive tests\nexport const HARDCODED_TESTS = [\n';
 
-export const getTests = () => HARDCODED_TESTS;
+tests.forEach((test, index) => {
+  tsContent += `  { id: '${test.id}', name: '${test.name.replace(/'/g, "\\'")}', price: ${test.price}, mrp: ${test.mrp}, sample_type: '${test.sample_type}', tat: '${test.tat}', department: '${test.department}', category: '${test.category}', fasting_required: ${test.fasting_required}, status: '${test.status}' }`;
+  if (index < tests.length - 1) {
+    tsContent += ',\n';
+  } else {
+    tsContent += '\n';
+  }
+});
+
+tsContent += `];\n\nexport const getTests = () => HARDCODED_TESTS;
 export const getTestById = (id: string) => HARDCODED_TESTS.find(t => t.id === id);
 export const searchTests = (query: string) => {
   const lowerQuery = query.toLowerCase();
@@ -203,5 +201,6 @@ export const searchTests = (query: string) => {
 };
 `;
 
-fs.writeFileSync('lib/data/hardcoded-tests.ts', tsContent, 'utf8');
-console.log(`Generated ${tests.length} tests successfully!`);
+fs.writeFileSync('./lib/data/hardcoded-tests.ts', tsContent, 'utf8');
+console.log(`✅ Generated ${tests.length} tests successfully!`);
+console.log('📁 File: ./lib/data/hardcoded-tests.ts');

@@ -6,14 +6,9 @@ import { useRouter } from 'next/navigation';
 import { FiHome, FiActivity, FiSearch, FiPackage, FiX } from 'react-icons/fi';
 import DNALogo from './ui/DNALogo';
 import Button from './ui/Button';
-import LoginRequiredModal from './modals/LoginRequiredModal';
-import { useAuthStore } from '@/store/auth';
 
 export default function Hero() {
   const router = useRouter();
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [loginFeature, setLoginFeature] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showResults, setShowResults] = useState(false);
@@ -21,11 +16,6 @@ export default function Hero() {
   const searchRef = useRef<HTMLDivElement>(null);
 
   const handleHomeVisit = () => {
-    if (!isAuthenticated) {
-      setLoginFeature('book home visit services');
-      setShowLoginModal(true);
-      return;
-    }
     router.push('/home-visit');
   };
 
@@ -301,14 +291,6 @@ export default function Hero() {
           </div>
         </div>
       </section>
-
-      {/* Login Required Modal */}
-      <LoginRequiredModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        message={`Please login to ${loginFeature}`}
-        feature={loginFeature}
-      />
     </>
   );
 }

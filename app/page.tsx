@@ -13,25 +13,16 @@ import MobileNav from '@/components/MobileNav';
 import Button from '@/components/ui/Button';
 import { useTests } from '@/lib/hooks/useTests';
 import { usePackages } from '@/lib/hooks/usePackages';
-import { useAuthStore } from '@/store/auth';
 import { FiUserCheck } from 'react-icons/fi';
 
 export default function Home() {
   const router = useRouter();
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   
   // Fetch data from database
   const { tests: frequentlyBookedTests, loading: testsLoading } = useTests({ limit: 8 });
   const { packages: healthPackages, loading: packagesLoading } = usePackages();
 
   const handleConsultationClick = () => {
-    if (!isAuthenticated) {
-      const shouldLogin = confirm('Login Required\n\nPlease login to book online consultation with our doctors.\n\nClick OK to go to login page.');
-      if (shouldLogin) {
-        router.push('/login');
-      }
-      return;
-    }
     router.push('/consultation');
   };
   return (

@@ -5,7 +5,28 @@ import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FiCheckCircle, FiDownload, FiPrinter, FiHome } from 'react-icons/fi';
 import Button from '@/components/ui/Button';
-import { BookingWithItems } from '@/lib/supabase/types';
+
+interface BookingItem {
+  id?: string;
+  service_name: string;
+  service_type: string;
+  quantity: number;
+  price: number;
+}
+
+interface BookingWithItems {
+  booking_id: string;
+  created_at: string;
+  user_name: string;
+  user_phone: string;
+  user_email: string;
+  user_address: string;
+  subtotal: number;
+  discount_amount: number;
+  tax_amount: number;
+  total_amount: number;
+  items: BookingItem[];
+}
 
 export default function BookingConfirmationPage() {
   const params = useParams();

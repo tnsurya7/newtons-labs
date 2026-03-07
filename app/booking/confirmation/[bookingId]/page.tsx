@@ -8,15 +8,19 @@ import Button from '@/components/ui/Button';
 
 interface BookingItem {
   id?: string;
-  service_name: string;
-  service_type: string;
-  quantity: number;
-  price: number;
+  service_name?: string;
+  service_type?: string;
+  quantity?: number;
+  price?: number;
+  // Support both naming conventions
+  name?: string;
+  type?: string;
 }
 
 interface BookingWithItems {
   booking_id: string;
-  created_at: string;
+  created_at?: string;
+  booking_date?: string;
   user_name: string;
   user_phone: string;
   user_email: string;
@@ -212,7 +216,7 @@ export default function BookingConfirmationPage() {
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">INVOICE</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Invoice #: {booking.booking_id}<br />
-                  Date: {new Date(booking.created_at).toLocaleDateString()}<br />
+                  Date: {new Date(booking.created_at || booking.booking_date || Date.now()).toLocaleDateString()}<br />
                   Status: <span className="text-orange-600 font-semibold">PENDING PAYMENT</span>
                 </p>
               </div>
@@ -242,20 +246,27 @@ export default function BookingConfirmationPage() {
                 </tr>
               </thead>
               <tbody>
-                {booking.items.map((item, index) => (
-                  <tr key={item.id || `item-${index}`} className="border-b border-gray-100 dark:border-gray-700">
-                    <td className="py-3 text-gray-900 dark:text-white">
-                      {item.service_name}
-                      <br />
-                      <span className="text-xs text-gray-500">{item.service_type}</span>
-                    </td>
-                    <td className="py-3 text-center text-gray-600 dark:text-gray-400">{item.quantity}</td>
-                    <td className="py-3 text-right text-gray-600 dark:text-gray-400">₹{item.price.toFixed(2)}</td>
-                    <td className="py-3 text-right text-gray-900 dark:text-white font-semibold">
-                      ₹{(item.price * item.quantity).toFixed(2)}
-                    </td>
-                  </tr>
-                ))}
+                {booking.items.map((item, index) => {
+                  const serviceName = item.service_name || item.name || 'Unknown Service';
+                  const serviceType = item.service_type || item.type || 'test';
+                  const quantity = item.quantity || 1;
+                  const price = item.price || 0;
+                  
+                  return (
+                    <tr key={item.id || `item-${index}`} className="border-b border-gray-100 dark:border-gray-700">
+                      <td className="py-3 text-gray-900 dark:text-white">
+                        {serviceName}
+                        <br />
+                        <span className="text-xs text-gray-500">{serviceType}</span>
+                      </td>
+                      <td className="py-3 text-center text-gray-600 dark:text-gray-400">{quantity}</td>
+                      <td className="py-3 text-right text-gray-600 dark:text-gray-400">₹{price.toFixed(2)}</td>
+                      <td className="py-3 text-right text-gray-900 dark:text-white font-semibold">
+                        ₹{(price * quantity).toFixed(2)}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

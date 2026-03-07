@@ -1,4 +1,25 @@
-import { BookingWithItems } from '@/lib/supabase/types';
+// Define BookingWithItems type locally
+interface BookingItem {
+  service_name: string;
+  service_type: string;
+  quantity: number;
+  price: number;
+}
+
+interface BookingWithItems {
+  booking_id: string;
+  user_name: string;
+  user_email: string;
+  user_phone: string;
+  user_address: string;
+  items: BookingItem[];
+  subtotal: number;
+  discount_amount: number;
+  tax_amount: number;
+  total_amount: number;
+  created_at: string;
+  id: string;
+}
 
 export function generateBookingConfirmationEmail(booking: BookingWithItems): string {
   const itemsHtml = booking.items.map(item => `

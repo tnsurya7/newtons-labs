@@ -1,27 +1,5 @@
 import { generateBookingConfirmationEmail, generateAdminNotificationEmail } from './templates';
-
-// Define BookingWithItems type locally
-interface BookingItem {
-  id: string;
-  name: string;
-  price: number;
-  type: string;
-  category?: string;
-  parameters?: number;
-  reportTime?: string;
-}
-
-interface BookingWithItems {
-  booking_id: string;
-  user_email: string;
-  user_name: string;
-  user_phone: string;
-  items: BookingItem[];
-  total_amount: number;
-  booking_date: string;
-  status: string;
-  address?: string;
-}
+import { BookingWithItems } from './types';
 
 // Dynamically import Resend only if available
 let Resend: any = null;

@@ -1,41 +1,24 @@
-// Define BookingWithItems type locally
-interface BookingItem {
-  service_name: string;
-  service_type: string;
-  quantity: number;
-  price: number;
-}
-
-interface BookingWithItems {
-  booking_id: string;
-  user_name: string;
-  user_email: string;
-  user_phone: string;
-  user_address: string;
-  items: BookingItem[];
-  subtotal: number;
-  discount_amount: number;
-  tax_amount: number;
-  total_amount: number;
-  created_at: string;
-  id: string;
-}
+import { BookingWithItems } from './types';
 
 export function generateBookingConfirmationEmail(booking: BookingWithItems): string {
   const itemsHtml = booking.items.map(item => `
     <tr>
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
-        <strong>${item.service_name}</strong><br/>
-        <span style="color: #6b7280; font-size: 14px;">${item.service_type}</span>
+        <strong>${item.service_name || item.name || 'Service'}</strong><br/>
+        <span style="color: #6b7280; font-size: 14px;">${item.service_type || item.type || 'Test'}</span>
       </td>
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">
-        ${item.quantity}
+        ${item.quantity || 1}
       </td>
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">
         ₹${item.price.toFixed(2)}
       </td>
     </tr>
   `).join('');
+
+  const subtotal = booking.subtotal || booking.total_amount;
+  const discountAmount = booking.discount_amount || 0;
+  const taxAmount = booking.tax_amount || 0;
 
   return `
 <!DOCTYPE html>
@@ -86,7 +69,7 @@ export function generateBookingConfirmationEmail(booking: BookingWithItems): str
                 </tr>
                 <tr>
                   <td style="padding: 8px 0; color: #6b7280; font-size: 14px; vertical-align: top;">Address:</td>
-                  <td style="padding: 8px 0; color: #1f2937; font-weight: 600; text-align: right;">${booking.user_address}</td>
+                  <td style="padding: 8px 0; color: #1f2937; font-weight: 600; text-align: right;">${booking.user_address || booking.address || 'N/A'}</td>
                 </tr>
               </table>
             </td>
@@ -117,17 +100,17 @@ export function generateBookingConfirmationEmail(booking: BookingWithItems): str
               <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb; border-radius: 8px; padding: 20px;">
                 <tr>
                   <td style="padding: 8px 0; color: #6b7280;">Subtotal:</td>
-                  <td style="padding: 8px 0; color: #1f2937; font-weight: 600; text-align: right;">₹${booking.subtotal.toFixed(2)}</td>
+                  <td style="padding: 8px 0; color: #1f2937; font-weight: 600; text-align: right;">₹${subtotal.toFixed(2)}</td>
                 </tr>
-                ${booking.discount_amount > 0 ? `
+                ${discountAmount > 0 ? `
                 <tr>
                   <td style="padding: 8px 0; color: #059669;">Discount:</td>
-                  <td style="padding: 8px 0; color: #059669; font-weight: 600; text-align: right;">-₹${booking.discount_amount.toFixed(2)}</td>
+                  <td style="padding: 8px 0; color: #059669; font-weight: 600; text-align: right;">-₹${discountAmount.toFixed(2)}</td>
                 </tr>
                 ` : ''}
                 <tr>
                   <td style="padding: 8px 0; color: #6b7280;">Tax:</td>
-                  <td style="padding: 8px 0; color: #1f2937; font-weight: 600; text-align: right;">₹${booking.tax_amount.toFixed(2)}</td>
+                  <td style="padding: 8px 0; color: #1f2937; font-weight: 600; text-align: right;">₹${taxAmount.toFixed(2)}</td>
                 </tr>
                 <tr style="border-top: 2px solid #e5e7eb;">
                   <td style="padding: 12px 0 0 0; color: #1f2937; font-size: 18px; font-weight: bold;">Total Amount:</td>
@@ -190,9 +173,9 @@ export function generateBookingConfirmationEmail(booking: BookingWithItems): str
 export function generateAdminNotificationEmail(booking: BookingWithItems): string {
   const itemsHtml = booking.items.map(item => `
     <tr>
-      <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${item.service_name}</td>
-      <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${item.service_type}</td>
-      <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
+      <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${item.service_name || item.name || 'Service'}</td>
+      <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">${item.service_type || item.type || 'Test'}</td>
+      <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity || 1}</td>
       <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹${item.price.toFixed(2)}</td>
     </tr>
   `).join('');
@@ -229,7 +212,7 @@ export function generateAdminNotificationEmail(booking: BookingWithItems): strin
                 </tr>
                 <tr>
                   <td style="padding: 8px 0; color: #6b7280;">Date:</td>
-                  <td style="padding: 8px 0; color: #1f2937; font-weight: 600; text-align: right;">${new Date(booking.created_at).toLocaleString()}</td>
+                  <td style="padding: 8px 0; color: #1f2937; font-weight: 600; text-align: right;">${new Date(booking.created_at || booking.booking_date || Date.now()).toLocaleString()}</td>
                 </tr>
                 <tr>
                   <td style="padding: 8px 0; color: #6b7280;">Amount:</td>
@@ -253,7 +236,7 @@ export function generateAdminNotificationEmail(booking: BookingWithItems): strin
                 </tr>
                 <tr>
                   <td style="padding: 5px 0; color: #6b7280; vertical-align: top;">Address:</td>
-                  <td style="padding: 5px 0; color: #1f2937; font-weight: 600; text-align: right;">${booking.user_address}</td>
+                  <td style="padding: 5px 0; color: #1f2937; font-weight: 600; text-align: right;">${booking.user_address || booking.address || 'N/A'}</td>
                 </tr>
               </table>
 
@@ -273,7 +256,7 @@ export function generateAdminNotificationEmail(booking: BookingWithItems): strin
               </table>
 
               <div style="margin-top: 30px; text-align: center;">
-                <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin/bookings/${booking.id}" 
+                <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin/bookings/${booking.id || booking.booking_id}" 
                    style="display: inline-block; background-color: #2563eb; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: 600;">
                   View in Admin Panel
                 </a>

@@ -8,6 +8,7 @@ import Card from './ui/Card';
 import Button from './ui/Button';
 import Badge from './ui/Badge';
 import { formatPrice } from '@/lib/utils';
+import WhatsAppBookingModal from './modals/WhatsAppBookingModal';
 
 interface PackageCardProps {
   id: string;
@@ -30,6 +31,7 @@ export default function PackageCard({
   features,
 }: PackageCardProps) {
   const [showTestsModal, setShowTestsModal] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(false);
 
   // Parse features if it's a JSON string from database
   const parsedFeatures = typeof features === 'string' ? JSON.parse(features) : features;
@@ -39,12 +41,7 @@ export default function PackageCard({
   const displayOriginalPrice = Math.round(originalPrice * 1.2);
   const discountPercentage = Math.round(((displayOriginalPrice - sellingPrice) / displayOriginalPrice) * 100);
 
-  const handleBookNow = () => {
-    const testsIncluded = featuresList.join('\n• ');
-    const message = `Hi, I would like to book the following package:\n\n*Package Name:* ${name}\n*Price:* ₹${sellingPrice}\n*Tests Included:* ${tests}\n\n*Tests:*\n• ${testsIncluded}\n\nPlease help me with the booking process.`;
-    const whatsappUrl = `https://wa.me/919003130800?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-  };
+  const itemDetails = `*Tests Included:* ${tests}\n*Package Type:* Health Package`;
 
   // Show only first 4 features in card
   const displayFeatures = featuresList.slice(0, 4);
@@ -125,7 +122,7 @@ export default function PackageCard({
             {/* Buttons */}
             <div className="space-y-2">
               <Button
-                onClick={handleBookNow}
+                onClick={() => setShowBookingModal(true)}
                 className="w-full text-sm py-2 bg-green-600 hover:bg-green-700 flex items-center justify-center gap-2"
               >
                 <FaWhatsapp size={16} />
@@ -143,6 +140,16 @@ export default function PackageCard({
           </div>
         </Card>
       </motion.div>
+
+      {/* WhatsApp Booking Modal */}
+      <WhatsAppBookingModal
+        isOpen={showBookingModal}
+        onClose={() => setShowBookingModal(false)}
+        itemName={name}
+        itemPrice={sellingPrice}
+        itemDetails={itemDetails}
+        itemType="package"
+      />
 
       {/* Tests Modal - Outside card to prevent z-index issues */}
       <AnimatePresence>
@@ -228,7 +235,7 @@ export default function PackageCard({
                     <button
                       onClick={() => {
                         setShowTestsModal(false);
-                        handleBookNow();
+                        setShowBookingModal(true);
                       }}
                       className="flex-1 px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors bg-green-600 hover:bg-green-700 flex items-center justify-center gap-2"
                     >

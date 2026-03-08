@@ -1,49 +1,53 @@
 'use client';
 
-import { FiHome, FiActivity, FiMapPin, FiUser, FiShoppingCart } from 'react-icons/fi';
+import { FiHome, FiActivity, FiPackage, FiPhone } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { useCartStore } from '@/store/cart';
 
 export default function MobileNav() {
   const router = useRouter();
-  const totalItems = useCartStore((state) => state.totalItems);
 
   const navItems = [
-    { icon: FiHome, label: 'Home', action: () => router.push('/') },
-    { icon: FiActivity, label: 'Tests', action: () => document.getElementById('tests')?.scrollIntoView({ behavior: 'smooth' }) },
     { 
-      icon: FiShoppingCart, 
-      label: 'Cart', 
-      badge: totalItems,
-      action: () => router.push('/cart')
+      icon: FiHome, 
+      label: 'Home', 
+      action: () => router.push('/') 
     },
     { 
-      icon: FiMapPin, 
-      label: 'Locations', 
-      action: async () => {
-        const pincode = prompt('Enter your pincode to find nearby labs:');
-        if (pincode) {
-          try {
-            const response = await fetch(`/api/locations/nearby?pincode=${pincode}`);
-            const result = await response.json();
-            if (result.success) {
-              const locations = result.data.locations.map((loc: any, i: number) => 
-                `${i + 1}. ${loc.name}\n   ${loc.address}\n   Distance: ${loc.distance}\n   Phone: ${loc.phone}`
-              ).join('\n\n');
-              alert(`📍 Found ${result.data.count} labs near ${pincode}\n\n${locations}`);
-            }
-          } catch (error) {
-            alert('Failed to find locations. Please try again.');
-          }
+      icon: FiActivity, 
+      label: 'Tests', 
+      action: () => {
+        if (window.location.pathname !== '/') {
+          router.push('/');
+          setTimeout(() => {
+            document.getElementById('tests')?.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        } else {
+          document.getElementById('tests')?.scrollIntoView({ behavior: 'smooth' });
         }
       }
     },
     { 
-      icon: FiUser, 
-      label: 'Profile', 
+      icon: FiPackage, 
+      label: 'Packages', 
       action: () => {
-        alert('Profile feature coming soon!');
+        if (window.location.pathname !== '/') {
+          router.push('/');
+          setTimeout(() => {
+            document.getElementById('packages')?.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        } else {
+          document.getElementById('packages')?.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    },
+    { 
+      icon: FiPhone, 
+      label: 'Support', 
+      action: () => {
+        const message = `Hi, I need assistance with booking a test/package. Please help me.`;
+        const whatsappUrl = `https://wa.me/919003130800?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
       }
     },
   ];
@@ -61,14 +65,7 @@ export default function MobileNav() {
             onClick={item.action}
             className="flex flex-col items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors relative px-3 py-1"
           >
-            <div className="relative">
-              <item.icon size={24} />
-              {item.badge && item.badge > 0 && (
-                <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse">
-                  {item.badge}
-                </span>
-              )}
-            </div>
+            <item.icon size={24} />
             <span className="text-xs font-medium">{item.label}</span>
           </button>
         ))}

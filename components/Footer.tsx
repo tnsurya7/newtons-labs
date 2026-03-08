@@ -211,7 +211,7 @@ export default function Footer() {
           {/* Bottom Bar */}
           <div className="border-t border-gray-800 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-              <p>&copy; 2024 New10Lab. All rights reserved.</p>
+              <p>&copy; 2026 New10Lab. All rights reserved.</p>
               <div className="flex gap-6">
                 <button 
                   onClick={() => alert('🔒 Privacy Policy\n\nYour privacy is important to us. We are committed to protecting your personal information and health data.\n\nKey Points:\n✓ Data encryption\n✓ HIPAA compliant\n✓ Secure storage\n✓ No data sharing without consent\n\nFor full policy, contact: support@new10lab.com')}

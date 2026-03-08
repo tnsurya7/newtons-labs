@@ -2,47 +2,59 @@ import { NextResponse } from 'next/server';
 import { HARDCODED_TESTS } from '@/lib/data/hardcoded-tests';
 import { HARDCODED_PACKAGES } from '@/lib/data/hardcoded-packages';
 
+// Normalize string for flexible search (remove spaces, hyphens, convert to lowercase)
+function normalizeSearchString(str: string): string {
+  return str.toLowerCase().replace(/[\s\-]/g, '');
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q') || '';
     
-    if (!query || query.length < 2) {
+    if (!query || query.length < 1) {
       return NextResponse.json({ results: [] });
     }
     
-    const searchLower = query.toLowerCase();
+    const normalizedQuery = normalizeSearchString(query);
     
-    // Search in tests - show actual MRP and calculate display price
+    // Search in tests - flexible matching
     const testResults = HARDCODED_TESTS
-      .filter(test =>
-        test.name.toLowerCase().includes(searchLower) ||
-        test.department?.toLowerCase().includes(searchLower) ||
-        test.category?.toLowerCase().includes(searchLower)
-      )
+      .filter(test => {
+        const normalizedName = normalizeSearchString(test.name);
+        const normalizedDept = normalizeSearchString(test.department || '');
+        const normalizedCat = normalizeSearchString(test.category || '');
+        
+        return normalizedName.includes(normalizedQuery) ||
+               normalizedDept.includes(normalizedQuery) ||
+               normalizedCat.includes(normalizedQuery);
+      })
       .slice(0, 10)
       .map(test => {
-        const mrp = test.mrp || test.price; // Actual MRP
-        const displayOriginalPrice = Math.round(mrp * 1.2); // Show 20% higher for discount effect
+        const mrp = test.mrp || test.price;
+        const displayOriginalPrice = Math.round(mrp * 1.2);
         const discount = Math.round(((displayOriginalPrice - mrp) / displayOriginalPrice) * 100);
         
         return {
           id: test.id,
           name: test.name,
           type: 'test' as const,
-          price: mrp, // Show actual MRP as selling price
+          price: mrp,
           originalPrice: displayOriginalPrice,
           discount: discount,
           details: `${test.department || test.category}`
         };
       });
     
-    // Search in packages
+    // Search in packages - flexible matching
     const packageResults = HARDCODED_PACKAGES
-      .filter(pkg =>
-        pkg.name.toLowerCase().includes(searchLower) ||
-        pkg.description?.toLowerCase().includes(searchLower)
-      )
+      .filter(pkg => {
+        const normalizedName = normalizeSearchString(pkg.name);
+        const normalizedDesc = normalizeSearchString(pkg.description || '');
+        
+        return normalizedName.includes(normalizedQuery) ||
+               normalizedDesc.includes(normalizedQuery);
+      })
       .slice(0, 5)
       .map(pkg => {
         const mrp = pkg.mrp || pkg.price;

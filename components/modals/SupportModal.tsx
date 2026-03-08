@@ -20,7 +20,20 @@ export default function SupportModal({ isOpen, onClose }: SupportModalProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`✅ Support Request Submitted!\n\nThank you ${formData.name}!\n\nOur team will contact you shortly at:\n📞 ${formData.phone}\n📧 ${formData.email}\n\nYou can also reach us directly at 9003130800`);
+    
+    // Send to WhatsApp with pre-filled data
+    let message = `Hi, I'm ${formData.name} from New10Lab.\n\n`;
+    message += `*Contact Details:*\n`;
+    message += `*Name:* ${formData.name}\n`;
+    message += `*Phone:* ${formData.phone}\n`;
+    message += `*Email:* ${formData.email}\n\n`;
+    message += `*Message:*\n${formData.message}\n\n`;
+    message += `Please assist me with this query.`;
+    
+    const whatsappUrl = `https://wa.me/919003130800?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+    
+    // Reset form and close
     setFormData({ name: '', phone: '', email: '', message: '' });
     onClose();
   };

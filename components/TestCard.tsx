@@ -46,6 +46,7 @@ export default function TestCard({
         whileHover={{ y: -8 }}
         transition={{ duration: 0.3 }}
         className="h-full"
+        data-item-id={id}
       >
         <Card className="h-full flex flex-col relative overflow-hidden group hover:shadow-2xl border-2 border-blue-100 dark:border-gray-700">
           {/* Discount Badge */}

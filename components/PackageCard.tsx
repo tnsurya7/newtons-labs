@@ -53,6 +53,7 @@ export default function PackageCard({
         whileHover={{ y: -4 }}
         transition={{ duration: 0.2 }}
         className="h-full"
+        data-item-id={id}
       >
         <Card
           glass

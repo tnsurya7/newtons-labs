@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     
     const searchLower = query.toLowerCase();
     
-    // Search in tests
+    // Search in tests - show actual MRP and calculate display price
     const testResults = HARDCODED_TESTS
       .filter(test =>
         test.name.toLowerCase().includes(searchLower) ||
@@ -21,13 +21,21 @@ export async function GET(request: Request) {
         test.category?.toLowerCase().includes(searchLower)
       )
       .slice(0, 10)
-      .map(test => ({
-        id: test.id,
-        name: test.name,
-        type: 'test',
-        price: test.price,
-        category: test.category
-      }));
+      .map(test => {
+        const mrp = test.mrp || test.price; // Actual MRP
+        const displayOriginalPrice = Math.round(mrp * 1.2); // Show 20% higher for discount effect
+        const discount = Math.round(((displayOriginalPrice - mrp) / displayOriginalPrice) * 100);
+        
+        return {
+          id: test.id,
+          name: test.name,
+          type: 'test' as const,
+          price: mrp, // Show actual MRP as selling price
+          originalPrice: displayOriginalPrice,
+          discount: discount,
+          details: `${test.department || test.category}`
+        };
+      });
     
     // Search in packages
     const packageResults = HARDCODED_PACKAGES
@@ -36,13 +44,21 @@ export async function GET(request: Request) {
         pkg.description?.toLowerCase().includes(searchLower)
       )
       .slice(0, 5)
-      .map(pkg => ({
-        id: pkg.id,
-        name: pkg.name,
-        type: 'package',
-        price: pkg.price,
-        category: pkg.category
-      }));
+      .map(pkg => {
+        const mrp = pkg.mrp || pkg.price;
+        const displayOriginalPrice = Math.round(mrp * 1.2);
+        const discount = Math.round(((displayOriginalPrice - mrp) / displayOriginalPrice) * 100);
+        
+        return {
+          id: pkg.id,
+          name: pkg.name,
+          type: 'package' as const,
+          price: mrp,
+          originalPrice: displayOriginalPrice,
+          discount: discount,
+          details: `${pkg.tests_included} Tests Included`
+        };
+      });
     
     const results = [...testResults, ...packageResults];
     

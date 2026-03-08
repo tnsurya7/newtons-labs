@@ -27,30 +27,24 @@ export default function ConsultationPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
-
-        try {
-            const response = await fetch('/api/booking/consultation', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                setSuccess(true);
-                setTimeout(() => {
-                    router.push('/');
-                }, 3000);
-            } else {
-                alert(result.message || 'Failed to book consultation. Please try again.');
-            }
-        } catch (error) {
-            alert('Failed to book consultation. Please try again.');
-        } finally {
-            setLoading(false);
-        }
+        
+        // Send to WhatsApp with pre-filled data
+        let message = `Hi, I would like to book an Online Consultation from New10Lab.\n\n`;
+        message += `*My Details:*\n`;
+        message += `*Name:* ${formData.name}\n`;
+        message += `*Email:* ${formData.email}\n`;
+        message += `*Phone:* ${formData.phone}\n\n`;
+        message += `*Health Concern:*\n${formData.message}\n\n`;
+        message += `Please contact me to schedule a consultation.`;
+        
+        const whatsappUrl = `https://wa.me/919003130800?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+        
+        // Show success message
+        setSuccess(true);
+        setTimeout(() => {
+            router.push('/');
+        }, 2000);
     };
 
     return (
@@ -95,10 +89,10 @@ export default function ConsultationPage() {
                             <div className="text-center py-12">
                                 <div className="text-7xl mb-6 animate-bounce">✅</div>
                                 <h2 className="text-2xl font-bold text-green-600 mb-4">
-                                    Consultation Booked Successfully!
+                                    Redirecting to WhatsApp!
                                 </h2>
                                 <p className="text-gray-600 dark:text-gray-400 mb-2">
-                                    We've sent confirmation emails to both you and our medical team.
+                                    Please send the message on WhatsApp to confirm your consultation.
                                 </p>
                                 <p className="text-sm text-gray-500 dark:text-gray-500">
                                     Redirecting to home page...

@@ -52,7 +52,4 @@ export const HARDCODED_TESTS = [
   { id: '50', name: 'Gene Expression', price: 2520, mrp: 2520, sample_type: 'Blood', tat: '3 Days', department: 'MOLECULAR BIOLOGY', category: 'MOLECULAR BIOLOGY', fasting_required: false, status: 'active' },
   { id: '51', name: 'DNA Sequencing', price: 3030, mrp: 3030, sample_type: 'Blood', tat: '5 Days', department: 'MOLECULAR BIOLOGY', category: 'MOLECULAR BIOLOGY', fasting_required: false, status: 'active' },
   { id: '52', name: 'Genetic Testing', price: 2840, mrp: 2840, sample_type: 'Blood', tat: '7 Days', department: 'MOLECULAR BIOLOGY', category: 'MOLECULAR BIOLOGY', fasting_required: false, status: 'active' },
-];
-export const getTests = () => HARDCODED_TESTS;
-export const getTestById = (id: string) => HARDCODED_TESTS.find(t => t.id === id);
-export const searchTests = (query: string) => {
+];

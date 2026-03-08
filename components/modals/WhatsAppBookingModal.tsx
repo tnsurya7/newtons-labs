@@ -112,7 +112,7 @@ export default function WhatsAppBookingModal({
                   </div>
                   <div>
                     <h2 className="text-xl font-bold">Book on WhatsApp</h2>
-                    <p className="text-sm text-green-100">Share your details (optional)</p>
+                    <p className="text-sm text-green-100">Share your details</p>
                   </div>
                 </div>
               </div>
@@ -132,19 +132,14 @@ export default function WhatsAppBookingModal({
                   </div>
                 </div>
 
-                {/* Info Message */}
-                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 mb-5 border border-blue-200 dark:border-blue-800">
-                  <p className="text-xs text-gray-700 dark:text-gray-300">
-                    💡 <strong>Optional:</strong> Share your details below to help us serve you better. You can also skip and provide details directly on WhatsApp.
-                  </p>
-                </div>
+                {/* Info Message - Removed */}
 
-                {/* Form Fields - All Optional */}
+                {/* Form Fields */}
                 <div className="space-y-4 mb-5">
                   {/* Name */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Your Name <span className="text-gray-400 text-xs">(Optional)</span>
+                      Your Name
                     </label>
                     <div className="relative">
                       <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -162,7 +157,7 @@ export default function WhatsAppBookingModal({
                   {/* Phone */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Phone Number <span className="text-gray-400 text-xs">(Optional)</span>
+                      Phone Number
                     </label>
                     <div className="relative">
                       <FiPhone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -180,7 +175,7 @@ export default function WhatsAppBookingModal({
                   {/* Address */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Address <span className="text-gray-400 text-xs">(Optional)</span>
+                      Address
                     </label>
                     <div className="relative">
                       <FiMapPin className="absolute left-3 top-3 text-gray-400" size={18} />
@@ -196,24 +191,14 @@ export default function WhatsAppBookingModal({
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="space-y-3">
-                  <Button
-                    type="submit"
-                    className="w-full bg-green-600 hover:bg-green-700 flex items-center justify-center gap-2"
-                  >
-                    <FaWhatsapp size={18} />
-                    Continue to WhatsApp
-                  </Button>
-                  
-                  <button
-                    type="button"
-                    onClick={handleSkip}
-                    className="w-full px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition-colors"
-                  >
-                    Skip & Continue
-                  </button>
-                </div>
+                {/* Action Button */}
+                <Button
+                  type="submit"
+                  className="w-full bg-green-600 hover:bg-green-700 flex items-center justify-center gap-2"
+                >
+                  <FaWhatsapp size={18} />
+                  Continue to WhatsApp
+                </Button>
 
                 {/* Footer Note */}
                 <div className="mt-4 text-center">

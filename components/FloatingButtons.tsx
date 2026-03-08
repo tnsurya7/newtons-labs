@@ -17,8 +17,16 @@ export default function FloatingButtons() {
 
   return (
     <div className="fixed bottom-24 right-6 z-40 flex flex-col gap-3">
-      {/* WhatsApp Button */}
+      {/* WhatsApp Button with Float Animation */}
       <motion.button
+        animate={{ 
+          y: [0, -10, 0],
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={handleWhatsAppClick}
@@ -28,8 +36,17 @@ export default function FloatingButtons() {
         <FaWhatsapp className="text-white" size={28} />
       </motion.button>
 
-      {/* Call Button */}
+      {/* Call Button with Float Animation */}
       <motion.button
+        animate={{ 
+          y: [0, -10, 0],
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 0.5
+        }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={handleCallClick}

@@ -1,15 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FiClock, FiActivity } from 'react-icons/fi';
+import { FaWhatsapp } from 'react-icons/fa';
 import Card from './ui/Card';
 import Button from './ui/Button';
 import Badge from './ui/Badge';
-import Toast from './ui/Toast';
 import { formatPrice } from '@/lib/utils';
-import { useCartStore } from '@/store/cart';
 
 interface TestCardProps {
   id: string;
@@ -32,45 +30,15 @@ export default function TestCard({
   reportTime,
   fasting,
 }: TestCardProps) {
-  const router = useRouter();
-  const addItem = useCartStore((state) => state.addItem);
-  const [showToast, setShowToast] = useState(false);
-
   // Swap display: Show MRP as main price, calculate higher "original" price
   const sellingPrice = originalPrice; // MRP from data (1600) - this is what user pays
   const displayOriginalPrice = Math.round(originalPrice * 1.2); // Add 20% (1920) - for strikethrough
   const discountPercentage = Math.round(((displayOriginalPrice - sellingPrice) / displayOriginalPrice) * 100);
 
-  const handleAddToCart = async () => {
-    try {
-      // Call API to add to cart
-      const response = await fetch('/api/cart/add', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, name, price, type: 'test' }),
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        // Update local state with all required fields
-        addItem({ 
-          id, 
-          name, 
-          price: sellingPrice, 
-          originalPrice: sellingPrice,
-          type: 'test',
-          discount: discountPercentage,
-          category: 'Diagnostic Test',
-          parameters,
-          reportTime
-        });
-        // Show toast notification
-        setShowToast(true);
-      }
-    } catch (error) {
-      alert('Failed to add to cart. Please try again.');
-    }
+  const handleBookNow = () => {
+    const message = `Hi, I would like to book the following test:\n\n*Test Name:* ${name}\n*Price:* ₹${sellingPrice}\n*Parameters:* ${parameters}\n*Report Time:* ${reportTime}\n*Fasting Required:* ${fasting ? 'Yes' : 'No'}\n\nPlease help me with the booking process.`;
+    const whatsappUrl = `https://wa.me/919003130800?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   return (
@@ -130,22 +98,13 @@ export default function TestCard({
           </div>
 
           <Button
-            onClick={handleAddToCart}
-            className="w-full group-hover:shadow-lg"
+            onClick={handleBookNow}
+            className="w-full group-hover:shadow-lg bg-green-600 hover:bg-green-700 flex items-center justify-center gap-2"
           >
-            Book Now
+            <FaWhatsapp size={18} />
+            Book on WhatsApp
           </Button>
         </div>
-
-        {/* Toast Notification */}
-        <Toast
-          isOpen={showToast}
-          onClose={() => setShowToast(false)}
-          title={name}
-          description={`${parameters} Parameters • ${reportTime}`}
-          price={sellingPrice}
-          type="success"
-        />
       </Card>
     </motion.div>
   );

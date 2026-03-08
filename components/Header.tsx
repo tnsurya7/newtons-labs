@@ -3,11 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { FiSearch, FiPhone, FiHome, FiShoppingCart, FiMenu, FiX, FiMapPin, FiMoon, FiSun, FiGift } from 'react-icons/fi';
-import { useCartStore } from '@/store/cart';
+import { FiSearch, FiPhone, FiHome, FiMenu, FiX, FiMapPin, FiMoon, FiSun, FiGift } from 'react-icons/fi';
 import { useThemeStore } from '@/store/theme';
-import { useLocationStore } from '@/store/location';
-import LocationModal from './modals/LocationModal';
 import SupportModal from './modals/SupportModal';
 
 interface SearchResult {
@@ -23,16 +20,13 @@ interface SearchResult {
 export default function Header() {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showLocationModal, setShowLocationModal] = useState(false);
   const [showSupportModal, setShowSupportModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   
-  const totalItems = useCartStore((state) => state.totalItems);
   const { isDark, toggleTheme } = useThemeStore();
-  const { city, pincode, setLocation } = useLocationStore();
 
   const handleHomeVisitClick = () => {
     router.push('/home-visit');
@@ -103,10 +97,6 @@ export default function Header() {
 
   const handleSupportClick = () => {
     setShowSupportModal(true);
-  };
-
-  const handleLocationSelect = (location: { city: string; pincode: string }) => {
-    setLocation(location.city, location.pincode);
   };
 
   return (
@@ -255,21 +245,6 @@ export default function Header() {
               >
                 <FiHome size={20} className="text-teal-600" />
                 <span className="text-sm font-medium">Home Visit</span>
-              </button>
-
-
-
-              <button
-                onClick={() => router.push('/cart')}
-                className="relative p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                title="Shopping Cart"
-              >
-                <FiShoppingCart size={20} />
-                {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse">
-                    {totalItems}
-                  </span>
-                )}
               </button>
 
               <button

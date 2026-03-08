@@ -3,12 +3,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiCheck, FiStar, FiList, FiX } from 'react-icons/fi';
+import { FaWhatsapp } from 'react-icons/fa';
 import Card from './ui/Card';
 import Button from './ui/Button';
 import Badge from './ui/Badge';
-import Toast from './ui/Toast';
 import { formatPrice } from '@/lib/utils';
-import { useCartStore } from '@/store/cart';
 
 interface PackageCardProps {
   id: string;
@@ -30,8 +29,6 @@ export default function PackageCard({
   popular,
   features,
 }: PackageCardProps) {
-  const addItem = useCartStore((state) => state.addItem);
-  const [showToast, setShowToast] = useState(false);
   const [showTestsModal, setShowTestsModal] = useState(false);
 
   // Parse features if it's a JSON string from database
@@ -42,33 +39,11 @@ export default function PackageCard({
   const displayOriginalPrice = Math.round(originalPrice * 1.2);
   const discountPercentage = Math.round(((displayOriginalPrice - sellingPrice) / displayOriginalPrice) * 100);
 
-  const handleAddToCart = async () => {
-    try {
-      const response = await fetch('/api/cart/add', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, name, price, type: 'package' }),
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        addItem({ 
-          id, 
-          name, 
-          price: sellingPrice, 
-          originalPrice: sellingPrice,
-          type: 'package',
-          discount: discountPercentage,
-          category: 'Health Package',
-          parameters: tests,
-          reportTime: '24-48 Hours'
-        });
-        setShowToast(true);
-      }
-    } catch (error) {
-      alert('Failed to add to cart. Please try again.');
-    }
+  const handleBookNow = () => {
+    const testsIncluded = featuresList.join('\n• ');
+    const message = `Hi, I would like to book the following package:\n\n*Package Name:* ${name}\n*Price:* ₹${sellingPrice}\n*Tests Included:* ${tests}\n\n*Tests:*\n• ${testsIncluded}\n\nPlease help me with the booking process.`;
+    const whatsappUrl = `https://wa.me/919003130800?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   // Show only first 4 features in card
@@ -150,11 +125,11 @@ export default function PackageCard({
             {/* Buttons */}
             <div className="space-y-2">
               <Button
-                onClick={handleAddToCart}
-                variant={popular ? 'secondary' : 'primary'}
-                className="w-full text-sm py-2"
+                onClick={handleBookNow}
+                className="w-full text-sm py-2 bg-green-600 hover:bg-green-700 flex items-center justify-center gap-2"
               >
-                Book Package
+                <FaWhatsapp size={16} />
+                Book on WhatsApp
               </Button>
 
               <button
@@ -166,18 +141,6 @@ export default function PackageCard({
               </button>
             </div>
           </div>
-
-          {/* Toast Notification */}
-          <Toast
-            isOpen={showToast}
-            onClose={() => setShowToast(false)}
-            title={name}
-            description={`Includes ${tests} Tests • Save ${discountPercentage}%`}
-            price={sellingPrice}
-            type="success"
-          />
-
-          {/* Login Required Modal */}
         </Card>
       </motion.div>
 
@@ -265,15 +228,12 @@ export default function PackageCard({
                     <button
                       onClick={() => {
                         setShowTestsModal(false);
-                        handleAddToCart();
+                        handleBookNow();
                       }}
-                      className={`flex-1 px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors ${
-                        popular
-                          ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
-                          : 'bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700'
-                      }`}
+                      className="flex-1 px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors bg-green-600 hover:bg-green-700 flex items-center justify-center gap-2"
                     >
-                      Book Now • {formatPrice(sellingPrice)}
+                      <FaWhatsapp size={16} />
+                      Book on WhatsApp
                     </button>
                   </div>
                 </div>

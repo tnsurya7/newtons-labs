@@ -13,22 +13,24 @@ export async function GET() {
     
     // Map categories to health concerns with friendly names
     const categoryMap: Record<string, string> = {
-      'IMMUNOLOGY': 'Immunity',
-      'IMMUNOLOGY / SEROLOGY': 'Immunity',
-      'CLINICAL MICROBIOLOGY': 'Infections',
-      'MICROBIOLOGY': 'Infections',
-      'PATHOLOGY': 'Blood Tests',
-      'HAEMATOLOGY': 'Blood Tests',
-      'CLINICAL PATHOLOGY': 'Kidney',
+      'IMMUNOLOGY': 'IMMUNOLOGY / SEROLOGY',
+      'IMMUNOLOGY / SEROLOGY': 'IMMUNOLOGY / SEROLOGY', 
+      'CLINICAL MICROBIOLOGY': 'MICROBIOLOGY',
+      'MICROBIOLOGY': 'MICROBIOLOGY',
+      'PATHOLOGY': 'HAEMATOLOGY',
+      'HAEMATOLOGY': 'HAEMATOLOGY',
+      'CLINICAL PATHOLOGY': 'Kidney & Urine',
+      'Kidney & Urine': 'Kidney & Urine',
       'CLINICAL BIOCHEMISTRY': 'General Health',
-      'MOLECULAR BIOLOGY': 'Genetic Tests',
-      'ALLERGY': 'Allergy'
+      'General Health': 'General Health',
+      'MOLECULAR BIOLOGY': 'MOLECULAR BIOLOGY',
+      'ALLERGY': 'ALLERGY'
     };
     
     // Create health concerns array
     const healthConcerns = Object.entries(categoryCount)
       .map(([category, count]) => ({
-        id: category.toLowerCase().replace(/\s+/g, '-'),
+        id: category.toLowerCase().replace(/\s+/g, '-').replace(/\//g, '-'),
         name: categoryMap[category] || category,
         category: category,
         tests: count

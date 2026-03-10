@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { FiThermometer, FiDroplet, FiFilter, FiHeart, FiZap, FiSun, FiAlertCircle, FiActivity, FiX, FiShoppingCart, FiClock } from 'react-icons/fi';
+import { FiThermometer, FiDroplet, FiFilter, FiHeart, FiZap, FiSun, FiAlertCircle, FiActivity, FiX, FiClock } from 'react-icons/fi';
+import { FaWhatsapp } from 'react-icons/fa';
 import Toast from './ui/Toast';
-import { useCartStore } from '@/store/cart';
+import WhatsAppBookingModal from './modals/WhatsAppBookingModal';
+// Removed cart functionality - using WhatsApp booking instead
 
 const colorMap: { [key: string]: string } = {
   'IMMUNOLOGY / SEROLOGY': 'bg-gradient-to-br from-blue-500 to-blue-600',
@@ -49,8 +51,10 @@ export default function HealthConcerns() {
   const [loadingTests, setLoadingTests] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastData, setToastData] = useState<any>(null);
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [selectedTest, setSelectedTest] = useState<any>(null);
   
-  const addItem = useCartStore((state) => state.addItem);
+  // Removed cart functionality
 
   useEffect(() => {
     async function fetchHealthConcerns() {
@@ -93,49 +97,9 @@ export default function HealthConcerns() {
     setConcernTests([]);
   };
 
-  const handleAddToCart = async (test: any) => {
-    try {
-      // Calculate pricing
-      const sellingPrice = test.price;
-      const displayOriginalPrice = test.original_price || Math.round(test.price * 1.2);
-      const discountPercentage = Math.round(((displayOriginalPrice - sellingPrice) / displayOriginalPrice) * 100);
-
-      // Call API to add to cart
-      const response = await fetch('/api/cart/add', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: test.id, name: test.name, price: test.price, type: 'test' }),
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        // Update local state
-        addItem({ 
-          id: test.id, 
-          name: test.name, 
-          price: sellingPrice, 
-          originalPrice: sellingPrice,
-          type: 'test',
-          discount: discountPercentage,
-          category: 'Diagnostic Test',
-          parameters: test.parameters || 1,
-          reportTime: test.report_time || '24 Hours'
-        });
-        
-        // Show toast notification
-        setToastData({
-          name: test.name,
-          parameters: test.parameters || 1,
-          reportTime: test.report_time || '24 Hours',
-          price: sellingPrice
-        });
-        setShowToast(true);
-      }
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      alert('Failed to add to cart. Please try again.');
-    }
+  const handleBookTest = (test: any) => {
+    setSelectedTest(test);
+    setShowBookingModal(true);
   };
 
   if (loading) {
@@ -324,10 +288,11 @@ export default function HealthConcerns() {
 
                               {/* Book Button */}
                               <button
-                                onClick={() => handleAddToCart(test)}
-                                className="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white text-sm font-medium rounded-lg transition-all transform hover:scale-105"
+                                onClick={() => handleBookTest(test)}
+                                className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2"
                               >
-                                Add to Cart
+                                <FaWhatsapp size={16} />
+                                Book on WhatsApp
                               </button>
                             </div>
                           </motion.div>
@@ -347,7 +312,7 @@ export default function HealthConcerns() {
                       Close
                     </button>
                     <button
-                      onClick={() => router.push(`/health-concerns/${selectedConcern.category}`)}
+                      onClick={() => router.push('/tests')}
                       className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 rounded-lg transition-colors"
                     >
                       View All Tests
@@ -359,6 +324,21 @@ export default function HealthConcerns() {
           </>
         )}
       </AnimatePresence>
+
+      {/* WhatsApp Booking Modal */}
+      {selectedTest && (
+        <WhatsAppBookingModal
+          isOpen={showBookingModal}
+          onClose={() => {
+            setShowBookingModal(false);
+            setSelectedTest(null);
+          }}
+          itemName={selectedTest.name}
+          itemPrice={selectedTest.price}
+          itemDetails={`Parameters: ${selectedTest.parameters || 1} • Report Time: ${selectedTest.report_time || '24 Hours'} • Sample: ${selectedTest.sample_type || 'Blood'}`}
+          itemType="test"
+        />
+      )}
 
       {/* Toast Notification */}
       {toastData && (

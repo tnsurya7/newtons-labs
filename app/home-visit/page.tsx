@@ -11,7 +11,6 @@ import Footer from '@/components/Footer';
 export default function HomeVisitPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
@@ -32,24 +31,31 @@ export default function HomeVisitPage() {
         setLoading(true);
 
         try {
-            const response = await fetch('/api/booking/home-visit', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+            // Create WhatsApp message with form data
+            const message = `*New Home Visit Booking*\n\n` +
+                `*Name:* ${formData.name}\n` +
+                `*Phone:* ${formData.phone}\n` +
+                `*Address:* ${formData.address}\n` +
+                `*Preferred Date:* ${formData.date || 'Not specified'}\n` +
+                `*Preferred Time:* ${formData.time || 'Not specified'}`;
+
+            // WhatsApp number (replace with your actual WhatsApp number)
+            const whatsappNumber = '919003130800';
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+
+            // Open WhatsApp in new tab
+            window.open(whatsappUrl, '_blank');
+
+            // Reset form after opening WhatsApp
+            setFormData({
+                name: '',
+                phone: '',
+                address: '',
+                date: '',
+                time: '',
             });
-
-            const result = await response.json();
-
-            if (result.success) {
-                setSuccess(true);
-                setTimeout(() => {
-                    router.push('/');
-                }, 3000);
-            } else {
-                alert(result.message || 'Failed to book home visit. Please try again.');
-            }
         } catch (error) {
-            alert('Failed to book home visit. Please try again.');
+            alert('Failed to open WhatsApp. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -90,21 +96,7 @@ export default function HomeVisitPage() {
                         transition={{ delay: 0.1 }}
                         className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 border-2 border-gray-100 dark:border-gray-700"
                     >
-                        {success ? (
-                            <div className="text-center py-12">
-                                <div className="text-7xl mb-6 animate-bounce">✅</div>
-                                <h2 className="text-2xl font-bold text-green-600 mb-4">
-                                    Home Visit Booked Successfully!
-                                </h2>
-                                <p className="text-gray-600 dark:text-gray-400 mb-2">
-                                    Our team will contact you shortly to confirm the appointment.
-                                </p>
-                                <p className="text-sm text-gray-500 dark:text-gray-500">
-                                    Redirecting to home page...
-                                </p>
-                            </div>
-                        ) : (
-                            <form onSubmit={handleSubmit} className="space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-6">
                                 <div>
                                     <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                                         Full Name <span className="text-red-500">*</span>
@@ -208,33 +200,7 @@ export default function HomeVisitPage() {
                                     Our team will contact you to confirm the appointment time.
                                 </p>
                             </form>
-                        )}
                     </motion.div>
-
-                    {!success && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
-                            className="grid md:grid-cols-3 gap-4 mt-8"
-                        >
-                            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 text-center border-2 border-blue-100 dark:border-blue-900">
-                                <div className="text-3xl mb-2">🆓</div>
-                                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Free Service</p>
-                                <p className="text-xs text-gray-500">No extra charges</p>
-                            </div>
-                            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 text-center border-2 border-teal-100 dark:border-teal-900">
-                                <div className="text-3xl mb-2">🔒</div>
-                                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Safe & Hygienic</p>
-                                <p className="text-xs text-gray-500">Trained professionals</p>
-                            </div>
-                            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 text-center border-2 border-purple-100 dark:border-purple-900">
-                                <div className="text-3xl mb-2">⏰</div>
-                                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Flexible Timing</p>
-                                <p className="text-xs text-gray-500">Choose your slot</p>
-                            </div>
-                        </motion.div>
-                    )}
                 </motion.div>
             </main>
 

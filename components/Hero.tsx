@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { FiHome, FiActivity, FiSearch, FiPackage, FiX } from 'react-icons/fi';
-import DNALogo from './ui/DNALogo';
 import Button from './ui/Button';
+import Image from 'next/image';
 
 export default function Hero() {
   const router = useRouter();
@@ -14,6 +14,21 @@ export default function Hero() {
   const [showResults, setShowResults] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const images = [
+    '/BLLOD SAMPLE.jpg',
+    '/BLLOD SAMPLE (1).jpg'
+  ];
+
+  // Image carousel effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    }, 4000); // Change image every 4 seconds
+
+    return () => clearInterval(interval);
+  }, [images.length]);
 
   const handleHomeVisit = () => {
     router.push('/home-visit');
@@ -247,27 +262,41 @@ export default function Hero() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="relative"
             >
-              <div className="relative w-full h-[400px] md:h-[500px] rounded-3xl overflow-hidden bg-gradient-to-br from-blue-500 via-teal-500 to-cyan-500 flex items-center justify-center shadow-2xl border-4 border-white/50">
-                <div className="text-white text-center p-8">
-                  <DNALogo size={160} className="mx-auto mb-6" animate={true} />
-                  <h3 className="text-2xl font-bold mb-2">Advanced Diagnostics</h3>
-                  <p className="text-blue-100">Precision. Care. Trust.</p>
-                </div>
+              <div className="relative w-full h-[300px] md:h-[400px] lg:h-[500px] rounded-3xl overflow-hidden shadow-2xl border-4 border-white/50">
+                {/* Crossfading Images */}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentImageIndex}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 1 }}
+                    className="absolute inset-0"
+                  >
+                    <Image
+                      src={images[currentImageIndex]}
+                      alt="Blood Sample Testing"
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                  </motion.div>
+                </AnimatePresence>
               </div>
               
               {/* Floating Cards */}
               <motion.div
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 3, repeat: Infinity }}
-                className="absolute top-8 -left-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 max-w-[200px] border-2 border-teal-200 dark:border-teal-800"
+                className="absolute top-4 -left-2 md:top-8 md:-left-4 bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl shadow-2xl p-3 md:p-4 max-w-[160px] md:max-w-[200px] border-2 border-teal-200 dark:border-teal-800"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-cyan-500 dark:bg-teal-900 rounded-xl flex items-center justify-center text-2xl shadow-lg">
+                <div className="flex items-center gap-2 md:gap-3">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-teal-400 to-cyan-500 dark:bg-teal-900 rounded-lg md:rounded-xl flex items-center justify-center text-xl md:text-2xl shadow-lg">
                     ✓
                   </div>
                   <div>
-                    <p className="font-semibold text-sm">Quality Testing</p>
-                    <p className="text-xs text-gray-500">Accurate Results</p>
+                    <p className="font-semibold text-xs md:text-sm">Quality Testing</p>
+                    <p className="text-[10px] md:text-xs text-gray-500">Accurate Results</p>
                   </div>
                 </div>
               </motion.div>
@@ -275,15 +304,15 @@ export default function Hero() {
               <motion.div
                 animate={{ y: [0, 10, 0] }}
                 transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-                className="absolute bottom-8 -right-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 max-w-[200px] border-2 border-blue-200 dark:border-blue-800"
+                className="absolute bottom-4 -right-2 md:bottom-8 md:-right-4 bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl shadow-2xl p-3 md:p-4 max-w-[160px] md:max-w-[200px] border-2 border-blue-200 dark:border-blue-800"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-cyan-500 dark:bg-blue-900 rounded-xl flex items-center justify-center">
-                    <FiHome size={24} className="text-white" />
+                <div className="flex items-center gap-2 md:gap-3">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-400 to-cyan-500 dark:bg-blue-900 rounded-lg md:rounded-xl flex items-center justify-center">
+                    <FiHome size={20} className="text-white md:w-6 md:h-6" />
                   </div>
                   <div>
-                    <p className="font-semibold text-sm">Home Visit</p>
-                    <p className="text-xs text-gray-500">Safe & Convenient</p>
+                    <p className="font-semibold text-xs md:text-sm">Home Visit</p>
+                    <p className="text-[10px] md:text-xs text-gray-500">Safe & Convenient</p>
                   </div>
                 </div>
               </motion.div>

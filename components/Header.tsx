@@ -74,39 +74,50 @@ export default function Header() {
     setSearchQuery('');
     setShowSearchResults(false);
     
-    // Navigate to homepage if not already there
-    if (window.location.pathname !== '/') {
-      router.push('/');
-      // Wait for navigation then scroll to the specific item
-      setTimeout(() => {
+    if (result.type === 'test') {
+      // For tests, navigate to /tests page with the test ID as a query parameter
+      if (window.location.pathname !== '/tests') {
+        router.push(`/tests?scrollTo=${result.id}`);
+      } else {
+        // Already on tests page, just scroll to the item
         scrollToItem(result.id, result.type);
-      }, 300);
+      }
     } else {
-      // Already on homepage, just scroll to the item
-      scrollToItem(result.id, result.type);
+      // For packages, navigate to homepage
+      if (window.location.pathname !== '/') {
+        router.push('/');
+        // Wait for navigation then scroll to the specific package
+        setTimeout(() => {
+          scrollToItem(result.id, result.type);
+        }, 500);
+      } else {
+        // Already on homepage, just scroll to the item
+        scrollToItem(result.id, result.type);
+      }
     }
   };
 
   const scrollToItem = (itemId: string, itemType: 'test' | 'package') => {
-    // First scroll to the section
-    const sectionId = itemType === 'test' ? 'tests' : 'packages';
-    const section = document.getElementById(sectionId);
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      
-      // Then try to find and highlight the specific card
-      setTimeout(() => {
-        const card = document.querySelector(`[data-item-id="${itemId}"]`);
-        if (card) {
-          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          // Add a highlight effect
-          card.classList.add('ring-4', 'ring-blue-500');
-          setTimeout(() => {
-            card.classList.remove('ring-4', 'ring-blue-500');
-          }, 2000);
-        }
-      }, 500);
+    // First scroll to the section (only on homepage for packages)
+    if (itemType === 'package') {
+      const section = document.getElementById('packages');
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
+    
+    // Then try to find and highlight the specific card
+    setTimeout(() => {
+      const card = document.querySelector(`[data-item-id="${itemId}"]`);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Add a highlight effect
+        card.classList.add('ring-4', 'ring-blue-500');
+        setTimeout(() => {
+          card.classList.remove('ring-4', 'ring-blue-500');
+        }, 2000);
+      }
+    }, 500);
   };
 
   const handleSupportClick = () => {

@@ -1,12 +1,20 @@
 import { NextResponse } from 'next/server';
 import { HARDCODED_TESTS } from '@/lib/data/hardcoded-tests';
 
+// Normalize string for flexible search
+function normalizeSearchString(str: string): string {
+  return str.toLowerCase()
+    .replace(/[\s\-\/\\(),.]/g, '')
+    .replace(/[&]/g, 'and');
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const search = searchParams.get('search');
     const limit = searchParams.get('limit');
+    const sortBy = searchParams.get('sortBy'); // New: sort parameter
     
     let tests = [...HARDCODED_TESTS];
     
@@ -18,14 +26,25 @@ export async function GET(request: Request) {
       );
     }
     
-    // Filter by search query if provided
+    // Filter by search query if provided - flexible matching
     if (search) {
-      const searchLower = search.toLowerCase();
-      tests = tests.filter(test =>
-        test.name.toLowerCase().includes(searchLower) ||
-        test.department?.toLowerCase().includes(searchLower) ||
-        test.category?.toLowerCase().includes(searchLower)
-      );
+      const normalizedSearch = normalizeSearchString(search);
+      tests = tests.filter(test => {
+        const normalizedName = normalizeSearchString(test.name);
+        const normalizedDept = normalizeSearchString(test.department || '');
+        const normalizedCat = normalizeSearchString(test.category || '');
+        const normalizedSample = normalizeSearchString(test.sample_type || '');
+        
+        return normalizedName.includes(normalizedSearch) ||
+               normalizedDept.includes(normalizedSearch) ||
+               normalizedCat.includes(normalizedSearch) ||
+               normalizedSample.includes(normalizedSearch);
+      });
+    }
+    
+    // Sort tests - for "Frequently Booked" show lowest prices first
+    if (sortBy === 'price-low') {
+      tests.sort((a, b) => (a.mrp || a.price) - (b.mrp || b.price));
     }
     
     // Apply limit if provided

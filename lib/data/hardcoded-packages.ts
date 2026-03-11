@@ -3,7 +3,7 @@ export const HARDCODED_PACKAGES = [
   {
     id: 'pkg-1',
     name: 'MAP59*',
-    description: 'Basic health checkup package',
+    description: 'Basic health checkup package - Complete wellness screening',
     price: 1412,
     mrp: 1412,
     tests_included: 15,
@@ -18,7 +18,7 @@ export const HARDCODED_PACKAGES = [
   {
     id: 'pkg-2',
     name: 'MAP69*',
-    description: 'Comprehensive health screening',
+    description: 'Comprehensive health screening package - Full body checkup',
     price: 1969,
     mrp: 1969,
     tests_included: 25,
@@ -33,7 +33,7 @@ export const HARDCODED_PACKAGES = [
   {
     id: 'pkg-3',
     name: 'MAP79*',
-    description: 'Advanced health package',
+    description: 'Advanced health package - Premium wellness checkup',
     price: 7807,
     mrp: 7807,
     tests_included: 45,
@@ -48,7 +48,7 @@ export const HARDCODED_PACKAGES = [
   {
     id: 'pkg-4',
     name: 'MAP89*',
-    description: 'Premium health checkup',
+    description: 'Premium health checkup - Executive wellness package',
     price: 8166,
     mrp: 8166,
     tests_included: 50,
@@ -63,7 +63,7 @@ export const HARDCODED_PACKAGES = [
   {
     id: 'pkg-5',
     name: 'MAP99* FEMALE',
-    description: 'Complete health package for women',
+    description: 'Complete health package for women - Ladies wellness checkup',
     price: 11401,
     mrp: 11401,
     tests_included: 65,
@@ -78,7 +78,7 @@ export const HARDCODED_PACKAGES = [
   {
     id: 'pkg-6',
     name: 'MAP99* MALE',
-    description: 'Complete health package for men',
+    description: 'Complete health package for men - Mens wellness checkup',
     price: 11401,
     mrp: 11401,
     tests_included: 65,
@@ -93,7 +93,7 @@ export const HARDCODED_PACKAGES = [
   {
     id: 'pkg-7',
     name: 'Thyroid Screening',
-    description: 'Complete thyroid function tests',
+    description: 'Complete thyroid function tests - Thyroid health package',
     price: 2000,
     mrp: 2000,
     tests_included: 5,
@@ -108,7 +108,7 @@ export const HARDCODED_PACKAGES = [
   {
     id: 'pkg-8',
     name: 'Arthritis Basic Screen',
-    description: 'Basic arthritis screening package',
+    description: 'Basic arthritis screening package - Joint health checkup',
     price: 1500,
     mrp: 1500,
     tests_included: 8,

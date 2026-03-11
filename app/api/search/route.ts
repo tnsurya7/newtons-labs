@@ -2,9 +2,11 @@ import { NextResponse } from 'next/server';
 import { HARDCODED_TESTS } from '@/lib/data/hardcoded-tests';
 import { HARDCODED_PACKAGES } from '@/lib/data/hardcoded-packages';
 
-// Normalize string for flexible search (remove spaces, hyphens, convert to lowercase)
+// Normalize string for flexible search (remove spaces, hyphens, slashes, special chars, convert to lowercase)
 function normalizeSearchString(str: string): string {
-  return str.toLowerCase().replace(/[\s\-]/g, '');
+  return str.toLowerCase()
+    .replace(/[\s\-\/\\(),.]/g, '')  // Remove spaces, hyphens, slashes, parentheses, commas, dots
+    .replace(/[&]/g, 'and');  // Convert & to 'and'
 }
 
 export async function GET(request: Request) {
@@ -24,10 +26,12 @@ export async function GET(request: Request) {
         const normalizedName = normalizeSearchString(test.name);
         const normalizedDept = normalizeSearchString(test.department || '');
         const normalizedCat = normalizeSearchString(test.category || '');
+        const normalizedSample = normalizeSearchString(test.sample_type || '');
         
         return normalizedName.includes(normalizedQuery) ||
                normalizedDept.includes(normalizedQuery) ||
-               normalizedCat.includes(normalizedQuery);
+               normalizedCat.includes(normalizedQuery) ||
+               normalizedSample.includes(normalizedQuery);
       })
       .slice(0, 10)
       .map(test => {

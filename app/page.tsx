@@ -18,8 +18,8 @@ import { FiUserCheck } from 'react-icons/fi';
 export default function Home() {
   const router = useRouter();
   
-  // Fetch data from database
-  const { tests: frequentlyBookedTests, loading: testsLoading } = useTests({ limit: 8 });
+  // Fetch data from database - sort by lowest price for frequently booked
+  const { tests: frequentlyBookedTests, loading: testsLoading } = useTests({ limit: 8, sortBy: 'price-low' });
   const { packages: healthPackages, loading: packagesLoading } = usePackages();
 
   const handleConsultationClick = () => {

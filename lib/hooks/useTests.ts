@@ -16,6 +16,7 @@ interface UseTestsOptions {
   category?: string;
   search?: string;
   limit?: number;
+  sortBy?: string;
 }
 
 export function useTests(options: UseTestsOptions = {}) {
@@ -32,6 +33,7 @@ export function useTests(options: UseTestsOptions = {}) {
         if (options.category) params.append('category', options.category);
         if (options.search) params.append('search', options.search);
         if (options.limit) params.append('limit', options.limit.toString());
+        if (options.sortBy) params.append('sortBy', options.sortBy);
 
         const response = await fetch(`/api/tests?${params.toString()}`);
         
@@ -52,7 +54,7 @@ export function useTests(options: UseTestsOptions = {}) {
     }
 
     fetchTests();
-  }, [options.category, options.search, options.limit]);
+  }, [options.category, options.search, options.limit, options.sortBy]);
 
   return { tests, loading, error };
 }

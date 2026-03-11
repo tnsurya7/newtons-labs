@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -12,12 +13,44 @@ import { FiSearch, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 const TESTS_PER_PAGE = 24;
 
 export default function AllTestsPage() {
+  const searchParams = useSearchParams();
+  const scrollToId = searchParams.get('scrollTo');
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   // Fetch all tests from database
   const { tests: allTests, loading } = useTests();
+
+  // Scroll to specific test if scrollTo parameter is present
+  useEffect(() => {
+    if (scrollToId && allTests.length > 0 && !loading) {
+      // Find which page the test is on
+      const testIndex = allTests.findIndex(test => test.id === scrollToId);
+      if (testIndex !== -1) {
+        const pageNumber = Math.floor(testIndex / TESTS_PER_PAGE) + 1;
+        
+        // Set the correct page first
+        if (currentPage !== pageNumber) {
+          setCurrentPage(pageNumber);
+        }
+        
+        // Wait for page to render, then scroll to the card
+        setTimeout(() => {
+          const card = document.querySelector(`[data-item-id="${scrollToId}"]`);
+          if (card) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Add highlight effect
+            card.classList.add('ring-4', 'ring-blue-500');
+            setTimeout(() => {
+              card.classList.remove('ring-4', 'ring-blue-500');
+            }, 2000);
+          }
+        }, 600);
+      }
+    }
+  }, [scrollToId, allTests, loading, currentPage]);
 
   // Get unique categories
   const categories = useMemo(() => {

@@ -98,6 +98,11 @@ export default function HealthConcerns() {
   };
 
   const handleBookTest = (test: any) => {
+    // Close the health concerns modal first
+    setSelectedConcern(null);
+    setConcernTests([]);
+    
+    // Then open the booking modal
     setSelectedTest(test);
     setShowBookingModal(true);
   };

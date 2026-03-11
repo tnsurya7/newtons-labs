@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -12,7 +12,7 @@ import { FiSearch, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 const TESTS_PER_PAGE = 24;
 
-export default function AllTestsPage() {
+function TestsContent() {
   const searchParams = useSearchParams();
   const scrollToId = searchParams.get('scrollTo');
   
@@ -217,5 +217,27 @@ export default function AllTestsPage() {
       <Footer />
       <MobileNav />
     </div>
+  );
+}
+
+export default function AllTestsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
+        <Header />
+        <main className="pt-24 pb-20">
+          <div className="container mx-auto px-4">
+            <div className="text-center py-20">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <p className="mt-4 text-gray-600 dark:text-gray-400">Loading tests...</p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+        <MobileNav />
+      </div>
+    }>
+      <TestsContent />
+    </Suspense>
   );
 }

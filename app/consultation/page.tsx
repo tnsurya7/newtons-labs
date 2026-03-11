@@ -37,7 +37,7 @@ export default function ConsultationPage() {
         message += `*Health Concern:*\n${formData.message}\n\n`;
         message += `Please contact me to schedule a consultation.`;
         
-        const whatsappUrl = `https://wa.me/919003130800?text=${encodeURIComponent(message)}`;
+        const whatsappUrl = `https://wa.me/919003252500?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
         
         // Show success message

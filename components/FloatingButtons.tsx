@@ -7,12 +7,12 @@ import { FiPhone } from 'react-icons/fi';
 export default function FloatingButtons() {
   const handleWhatsAppClick = () => {
     const message = `Hi, I need assistance with New10Lab services. Please help me.`;
-    const whatsappUrl = `https://wa.me/919003130800?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/919003252500?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
   const handleCallClick = () => {
-    window.location.href = 'tel:9003130800';
+    window.location.href = 'tel:9003252500';
   };
 
   return (

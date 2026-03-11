@@ -30,7 +30,7 @@ export default function SupportModal({ isOpen, onClose }: SupportModalProps) {
     message += `*Message:*\n${formData.message}\n\n`;
     message += `Please assist me with this query.`;
     
-    const whatsappUrl = `https://wa.me/919003130800?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/919003252500?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
     
     // Reset form and close
@@ -93,7 +93,7 @@ export default function SupportModal({ isOpen, onClose }: SupportModalProps) {
                           Call Us
                         </h4>
                         <p className="text-blue-600 dark:text-blue-400 font-bold text-lg">
-                          9003130800
+                          9003252500
                         </p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           Available 24/7
@@ -233,7 +233,7 @@ export default function SupportModal({ isOpen, onClose }: SupportModalProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <button
-                      onClick={() => window.location.href = 'tel:9003130800'}
+                      onClick={() => window.location.href = 'tel:9003252500'}
                       className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors text-center"
                     >
                       <FiPhone className="mx-auto mb-1 text-blue-600" size={20} />
@@ -247,7 +247,7 @@ export default function SupportModal({ isOpen, onClose }: SupportModalProps) {
                       <p className="text-xs font-medium text-gray-900 dark:text-white">Email</p>
                     </button>
                     <button
-                      onClick={() => window.open('https://wa.me/919003130800', '_blank')}
+                      onClick={() => window.open('https://wa.me/919003252500', '_blank')}
                       className="p-3 bg-green-50 dark:bg-green-900/20 rounded-xl hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors text-center"
                     >
                       <FiMessageCircle className="mx-auto mb-1 text-green-600" size={20} />

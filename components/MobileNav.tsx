@@ -46,7 +46,7 @@ export default function MobileNav() {
       label: 'Support', 
       action: () => {
         const message = `Hi, I need assistance with booking a test/package. Please help me.`;
-        const whatsappUrl = `https://wa.me/919003130800?text=${encodeURIComponent(message)}`;
+        const whatsappUrl = `https://wa.me/919003252500?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
       }
     },

@@ -140,7 +140,7 @@ export default function BookingConfirmationPage() {
               </p>
               <div className="bg-white dark:bg-gray-800 rounded-lg p-3 mt-2">
                 <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                  📞 Contact: 9003130800
+                  📞 Contact: 9003252500
                 </p>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
                   You can also call us to confirm your booking and make payment arrangements
@@ -171,11 +171,11 @@ export default function BookingConfirmationPage() {
               <div className="bg-white dark:bg-gray-800 rounded-lg p-3">
                 <div className="flex items-center gap-4 flex-wrap">
                   <a 
-                    href="tel:9003130800" 
+                    href="tel:9003252500" 
                     className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold"
                   >
                     <span className="text-xl">📞</span>
-                    <span>9003130800</span>
+                    <span>9003252500</span>
                   </a>
                   <a 
                     href="mailto:support@new10lab.com" 
@@ -208,7 +208,7 @@ export default function BookingConfirmationPage() {
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   152/3, 6th Avenue, Anna Nagar East<br />
                   Chennai - 600 102<br />
-                  Phone: 9003130800<br />
+                  Phone: 9003252500<br />
                   Email: support@new10lab.com
                 </p>
               </div>
@@ -399,11 +399,11 @@ export default function BookingConfirmationPage() {
             </p>
             <div className="flex items-center gap-4 flex-wrap">
               <a 
-                href="tel:9003130800" 
+                href="tel:9003252500" 
                 className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold"
               >
                 <span className="text-xl">📞</span>
-                <span>9003130800</span>
+                <span>9003252500</span>
               </a>
               <a 
                 href="mailto:support@new10lab.com" 

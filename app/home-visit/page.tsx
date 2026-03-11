@@ -40,7 +40,7 @@ export default function HomeVisitPage() {
                 `*Preferred Time:* ${formData.time || 'Not specified'}`;
 
             // WhatsApp number (replace with your actual WhatsApp number)
-            const whatsappNumber = '919003130800';
+            const whatsappNumber = '919003252500';
             const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
             // Open WhatsApp in new tab

@@ -171,10 +171,10 @@ export default function Footer() {
                   <div>
                     <p className="font-semibold text-white">Customer Care</p>
                     <a 
-                      href="tel:9003130800"
+                      href="tel:9003252500"
                       className="hover:text-blue-400 transition-colors"
                     >
-                      9003130800
+                      9003252500
                     </a>
                   </div>
                 </li>

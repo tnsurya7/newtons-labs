@@ -145,7 +145,7 @@ export function generateBookingConfirmationEmail(booking: BookingWithItems): str
             <td style="padding: 0 30px 30px 30px; text-align: center;">
               <p style="color: #6b7280; margin: 0 0 10px 0; font-size: 14px;">Need help? Contact us:</p>
               <p style="margin: 0;">
-                <a href="tel:9003130800" style="color: #2563eb; text-decoration: none; font-weight: 600;">📞 9003130800</a>
+                <a href="tel:9003252500" style="color: #2563eb; text-decoration: none; font-weight: 600;">📞 9003252500</a>
                 <span style="color: #d1d5db; margin: 0 10px;">|</span>
                 <a href="mailto:support@new10lab.com" style="color: #2563eb; text-decoration: none; font-weight: 600;">✉️ support@new10lab.com</a>
               </p>

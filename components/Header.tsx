@@ -135,7 +135,7 @@ export default function Header() {
             </span>
             <div className="hidden md:flex items-center gap-4">
               <span className="flex items-center gap-1">
-                <FiPhone size={14} /> 9003130800
+                <FiPhone size={14} /> 9003252500
               </span>
             </div>
           </div>

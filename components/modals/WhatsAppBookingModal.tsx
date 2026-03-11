@@ -55,7 +55,7 @@ export default function WhatsAppBookingModal({
     
     message += `\nPlease help me with the booking process.`;
     
-    const whatsappUrl = `https://wa.me/919003130800?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/919003252500?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
     
     // Reset form and close modal
@@ -71,7 +71,7 @@ export default function WhatsAppBookingModal({
     message += `${itemDetails}\n`;
     message += `\nPlease help me with the booking process.`;
     
-    const whatsappUrl = `https://wa.me/919003130800?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/919003252500?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
     
     onClose();

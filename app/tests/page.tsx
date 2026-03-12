@@ -87,7 +87,7 @@ function TestsContent() {
   const filteredTests = useMemo(() => {
     return allTests.filter((test) => {
       // Normalize strings for flexible matching
-      const normalizeString = (str) => {
+      const normalizeString = (str: string) => {
         return str
           .toLowerCase()
           .replace(/[\s\-_]/g, '') // Remove spaces, hyphens, underscores

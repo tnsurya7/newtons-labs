@@ -23,34 +23,59 @@ function TestsContent() {
   // Fetch all tests from database
   const { tests: allTests, loading } = useTests();
 
-  // Scroll to specific test if scrollTo parameter is present
+  // Ensure body can scroll (fix modal overflow issue)
   useEffect(() => {
-    if (scrollToId && allTests.length > 0 && !loading) {
-      // Find which page the test is on
-      const testIndex = allTests.findIndex(test => test.id === scrollToId);
-      if (testIndex !== -1) {
-        const pageNumber = Math.floor(testIndex / TESTS_PER_PAGE) + 1;
+    document.body.style.overflow = 'unset';
+    return () => {
+      // Don't reset on cleanup to avoid interfering with modals
+    };
+  }, []);
+
+  // Effect 1: Change page when scrollTo parameter exists
+  useEffect(() => {
+    if (!scrollToId || !allTests.length) return;
+
+    // CLEAR LOCAL SEARCH AND FILTERS
+    setSearchQuery("");
+    setSelectedCategory("All");
+
+    const index = allTests.findIndex(test => String(test.id) === scrollToId);
+    if (index === -1) return;
+
+    const pageNumber = Math.floor(index / TESTS_PER_PAGE) + 1;
+    
+    // Always set the page, even if it's the same
+    setCurrentPage(pageNumber);
+  }, [scrollToId, allTests]);
+
+  // Effect 2: Scroll when element actually appears in DOM (bulletproof)
+  useEffect(() => {
+    if (!scrollToId) return;
+
+    const observer = new MutationObserver(() => {
+      const el = document.querySelector(`[data-item-id="${scrollToId}"]`);
+      
+      if (el) {
+        // Scroll to element
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
         
-        // Set the correct page first
-        if (currentPage !== pageNumber) {
-          setCurrentPage(pageNumber);
-        }
-        
-        // Wait for page to render, then scroll to the card
+        // Add highlight
+        el.classList.add("highlight-test");
         setTimeout(() => {
-          const card = document.querySelector(`[data-item-id="${scrollToId}"]`);
-          if (card) {
-            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            // Add highlight effect
-            card.classList.add('ring-4', 'ring-blue-500');
-            setTimeout(() => {
-              card.classList.remove('ring-4', 'ring-blue-500');
-            }, 2000);
-          }
-        }, 600);
+          el.classList.remove("highlight-test");
+        }, 3000);
+        
+        observer.disconnect();
       }
-    }
-  }, [scrollToId, allTests, loading, currentPage]);
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => observer.disconnect();
+  }, [scrollToId]);
 
   // Get unique categories
   const categories = useMemo(() => {
@@ -58,10 +83,21 @@ function TestsContent() {
     return ['All', ...Array.from(new Set(allTests.map(test => test.category)))];
   }, [allTests]);
 
-  // Filter tests
+  // Filter tests with flexible search
   const filteredTests = useMemo(() => {
     return allTests.filter((test) => {
-      const matchesSearch = test.name.toLowerCase().includes(searchQuery.toLowerCase());
+      // Normalize strings for flexible matching
+      const normalizeString = (str) => {
+        return str
+          .toLowerCase()
+          .replace(/[\s\-_]/g, '') // Remove spaces, hyphens, underscores
+          .replace(/[().,]/g, ''); // Remove parentheses, commas, dots
+      };
+      
+      const normalizedQuery = normalizeString(searchQuery);
+      const normalizedTestName = normalizeString(test.name);
+      
+      const matchesSearch = searchQuery === '' || normalizedTestName.includes(normalizedQuery);
       const matchesCategory = selectedCategory === 'All' || test.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });

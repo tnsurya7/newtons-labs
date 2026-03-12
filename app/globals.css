@@ -19,7 +19,7 @@
   }
   
   body {
-    @apply overflow-x-hidden;
+    @apply overflow-x-hidden overflow-y-auto;
   }
 }
 
@@ -64,4 +64,20 @@
 /* Glass effect utility */
 .glass {
   @apply bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg border border-white/20;
+}
+/* Test highlight animation */
+.highlight-test {
+  border: 2px solid #16a34a !important;
+  animation: pulse-highlight 2s ease-in-out;
+}
+
+@keyframes pulse-highlight {
+  0%, 100% {
+    border-color: #16a34a;
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4);
+  }
+  50% {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 8px rgba(22, 163, 74, 0);
+  }
 }

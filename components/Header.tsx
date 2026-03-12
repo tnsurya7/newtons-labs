@@ -77,7 +77,8 @@ export default function Header() {
     if (result.type === 'test') {
       // For tests, navigate to /tests page with the test ID as a query parameter
       if (window.location.pathname !== '/tests') {
-        router.push(`/tests?scrollTo=${result.id}`);
+        router.replace(`/tests?scrollTo=${result.id}`, { scroll: false });
+        router.refresh();
       } else {
         // Already on tests page, just scroll to the item
         scrollToItem(result.id, result.type);
@@ -131,7 +132,7 @@ export default function Header() {
         <div className="bg-gradient-to-r from-blue-600 via-teal-600 to-purple-600 text-white py-1.5 px-4 text-sm">
           <div className="container mx-auto flex justify-between items-center">
             <span className="flex items-center gap-2">
-              <FiGift size={16} /> Get 60% OFF on Health Packages | Free Home Sample Collection
+              <FiGift size={16} /> Blood Sample @ Home clinic & work
             </span>
             <div className="hidden md:flex items-center gap-4">
               <span className="flex items-center gap-1">
